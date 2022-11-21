@@ -30,6 +30,34 @@ def send_review_email():
         email.send()
     return "Email Send..."
 
+def send_leave_email(data):
+    email_subject = data['subject']
+    email_body = data['body']
+    from_email = data['employee_email']
+    ceo_query = Employees.objects.filter(role='CEO').values('user__email')
+    ceo_email = ceo_query[0]['user__email']
+    email = EmailMessage(
+                subject = email_subject,
+                body = email_body,
+                from_email = from_email,
+                to = ['aliramzan982@gmail.com',]
+            )
+    email.send()
+
+def send_leave_email_to_employee(data):
+    email_subject = data['subject']
+    email_body = data['body']
+    to_email = data['employee_email']
+    ceo_query = Employees.objects.filter(role='CEO').values('user__email')
+    ceo_email = ceo_query[0]['user__email']
+    email = EmailMessage(
+                subject = email_subject,
+                body = email_body,
+                from_email = ceo_email,
+                to = to_email,
+            )
+    email.send()
+
     #--------------------------------- Start Celery--------------------------------------------
 
     # celery -A business_management_system worker -l info --pool=solo

@@ -1,0 +1,196 @@
+{% extends 'hrm/base.html' %}
+{% load crispy_forms_tags %}
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+      <div class="col-12 mb-4">
+        <div class="card">
+          <div class="card-header obl p-2">
+            <div>
+            <h5 style="float: left;" class="mt-2 ml-3">Project Time Line</h5>
+            <p style="float: right;background-color: white;border-radius: 10px;padding: 3px;" class="mt-2"><span style="color:green;padding: 5px;border-radius: 10px;"><b>Completed</b></span>
+              <span style="color:rgb(192, 49, 97);padding: 5px;border-radius: 10px;"><b>Assigned</b></span>
+              <span style="color:red;padding: 5px;border-radius: 10px;"><b>Not Assigned</b></span>
+            </p>
+          </div>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-2"><b>Project</b></div>
+              <div class="col-10"><b>Tasks</b></div>
+            </div>
+            <hr style="background-color:black;">
+            <div class="row">
+            {% for project in tasks_result %}
+            
+              <div class="col-2 mt-4"><b>{{ project.project_title }} </b> </div>
+              <div class="col-10">
+                <div style="width:100%;background-color: rgb(219, 255, 219);">
+                  <hr style="background-color: green;padding:6px;width:{{project.tskcomp}}%;" align="left">
+                </div>
+                  <p style="overflow-x: scroll;padding:5px;white-space: nowrap;">
+                    {% for tasks in project.tasks %} 
+                    <b style="color: red;">---->> </b> 
+                    {% if tasks.status == 'C' %}
+                      <span style="color:green;padding: 8px;border-radius: 10px;"><b>{{tasks.task_title}}</b></span>
+                      {% elif tasks.status == 'A' %}
+                      <span style="color:rgb(192, 49, 97);padding: 8px;border-radius: 10px;width: 100px;"><b>{{tasks.task_title}}</b></span>
+                      {% else %}
+                      <span style="color:red;padding: 8px;border-radius: 10px;width: 100px;"><b>{{tasks.task_title}}</b></span>
+                      {% endif %}  
+                      {% endfor %}</p>
+              </div>
+            
+            
+            {% endfor %}
+          </div>
+          </div>
+        </div>
+
+        <div class="card card-h mt-2" style="background-color: #edf8fd;">
+          <div class="card-header obl">
+              <div>
+                <h5 style="float: left;" class="mt-2 ml-3">Pending Leave</h5>
+                <p style="float: right;background-color: white;border-radius: 10px;padding: 3px;" class="mt-2">
+                  <a class="btn btn-success" href="/leave_approved/0" >Approve All</a>
+                  <a class="btn btn-danger" href="/leave_rejected/0">Reject All</a>
+                </p>
+              </div>
+          </div>
+          <div class="card-body">
+              <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th scope="col">Date</th>
+                      <th scope="col">Leave Type</th>
+                      <th scope="col">Leave Reason</th>
+                      <th scope="col">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      {% for leave in leaves %}
+                    <tr>
+                      <th scope="row">{{ leave.leave_days }}</th>
+                      {% if leave.leave_type == 'P' %}
+                      <td>Paid</td>
+                      {% else %}
+                      <td>UnPaid</td>
+                      {% endif %}
+                      <td>{{leave.leave_reason}}</td>
+                      <td><a class="btn btn-success" href="/leave_approved/{{ leave.id }}" >Approve</a><a class="btn btn-danger" href="/leave_rejected/{{ leave.id }}">Reject</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+          </div>
+      </div>
+
+      </div>
+            {% for result in results %}
+            <div class="col-3">
+            <div class="card" style="height: 300px;">
+                <div class="card-header obl">
+                    <h6> {{ result.name }} </h6>
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table">
+                        {% for task in result.tasks %}
+                        <tbody>
+                          {% if task.avail == None or task.avail == 100 %}
+                            <tr style="background-color: green;color:white;">
+                                <th scope="col">Availability</th>
+                                <td>100 %</td>
+                                {% elif task.avail == 0 %}
+                                <tr style="background-color: orangered;color:black;">
+                                  <th scope="col">Availability</th>
+                                <td> 0 %</td>
+                                {% else %}
+                                <tr style="background-color: lightgreen ;color:black;">
+                                  <th scope="col">Availability</th>
+                                  <td>{{ task.avail }} %</td>
+                                  {% endif %}
+                              </tr>
+                         
+                          <tr>
+                            <th scope="col">Project</th>
+                            <td>{{ task.project_id }}</td>
+                          </tr>
+                          <tr>
+                            <th scope="col">Task</th>
+                            <td>{{ task.task_title }}</td>
+                          </tr>
+                          <tr>
+                            <th scope="col">Partner</th>
+                            <td>{{ task.manager }}</td>
+                          </tr>
+                          <tr>
+                            <th scope="col">Start Date</th>
+                            <td>{{ task.start_date }}</td>
+                          </tr>
+                          <tr>
+                            <th scope="col">Status</th>
+                            {% if task.status == 'C' %}
+                            <td style="color: green;"><b>Completed</b></td>
+                            {% elif task.status == 'N' %}
+                            <td style="color: red;"><b>Not Assigned</b></td>
+                            {% elif task.status == None %}
+                            <td style="color: red;"><b>Not Assigned</b></td>
+                            {% else %}
+                            <td style="color: blueviolet;"><b>Assigned</b></td>
+                            {% endif %}
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                </div>
+            </div>
+        </div>
+            {% endfor %}
+    </div>
+    <div class="row my-4">
+            <div class="col-4">
+              <div class="card form_card">
+                <div class="card-header obl">
+                  <h6>Add Project</h6>
+                </div>
+                <div class="card-body">
+                  <form method="post">
+                    {% csrf_token %}
+                  {{ pr_form|crispy }}
+                  <button class="btn btn-outline-success" type="submit" style="width: 100%;">Submit</button>
+                </form>
+                </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="card form_card">
+                <div class="card-header obl">
+                  <h6>Add Task</h6>
+                </div>
+                <div class="card-body">
+                  <form method="post">
+                    {% csrf_token %}
+                  {{ t_form|crispy }}
+                  <button class="btn btn-outline-success" type="submit" style="width: 100%;">Submit</button>
+                </form>
+              
+                </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="card form_card">
+                <div class="card-header obl">
+                  <h6>Assign Task</h6>
+                </div>
+                <div class="card-body">
+                  <form method="post">
+                    {% csrf_token %}
+                  {{ ta_form|crispy }}
+                  <button class="btn btn-outline-success" type="submit" style="width: 100%;">Submit</button>
+                </form>
+                </div>
+              </div>
+            </div>    
+          </div>
+</div>
+{% endblock %}

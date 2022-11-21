@@ -6,27 +6,98 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-8">
-            <div class="card">
-                <div class="card-header">
+            <!--<div class="card">
+                <div class="card-header"  style="background-color: #318db2; color:antiquewhite">
                     <h4> Welcome to Triodec </h4>
                 </div>
-                <div class="card-body">
+                <div class="card-body">-->
 
                     {% if user.is_authenticated %}
-                    <div class="content-section">
+                    <!--<div class="content-section">
                         <div class="media">
                             <img class="rounded-circle" src="{{ user.employees.image.url }}" style="width: 20%;">
                             <div class="media-body ml-4">
                                 <h4>{{ user.username }}</h4>
                                 <p>{{ user.email }}</p>
                             </div>
+                        </div>-->
+                        <div class="card card-h" style="background-color: #edf8fd;">
+                            <div class="card-header obl">
+                                <h5>Your Working Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-striped">
+                                    <thead>
+                                      <tr>
+                                        <th scope="col">Project</th>
+                                        <th scope="col">Task</th>
+                                        <th scope="col">Start Date</th>
+                                        <th scope="col">Status</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for task in tasks %}
+                                      <tr>
+                                        <th scope="row">{{ task.project_id }}</th>
+                                        <td>{{ task.task_title }}</td>
+                                        <td>{{ task.start_date }}</td>
+                                        {% if task.status == 'C' %}
+                                        <td style="color: green;"><b>Completed</b></td>
+                                        {% elif task.status == 'N' %}
+                                        <td style="color: red;"><b>Not Assigned</b></td>
+                                        {% else %}
+                                        <td style="color: blueviolet;"><b>Assigned</b></td>
+                                        {% endif %}
+                                      </tr>
+                                      {% endfor %}
+                                    </tbody>
+                                  </table>
+                            </div>
                         </div>
-                        <div class="container">
+                        <div class="card card-h mt-2" style="background-color: #edf8fd;">
+                            <div class="card-header obl">
+                                <h5>Leave Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-striped">
+                                    <thead>
+                                      <tr>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Leave Type</th>
+                                        <th scope="col">Leave Reason</th>
+                                        <th scope="col">Status</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for leave in leaves %}
+                                      <tr>
+                                        <th scope="row">{{ leave.leave_days }}</th>
+                                        {% if  leave.leave_type == 'P' %}
+                                        <td><b>Paid</b></td>
+                                        {% else %}
+                                        <td><b>Unpaid</b></td>
+                                        {% endif %}
+                                        <td>{{ leave.leave_reason }}</td>
+                                        {% if  leave.status == 'A' %}
+                                        <td style="color: green;"><b>Approved</b></td>
+                                        {% elif leave.status == 'R' %}
+                                        <td style="color: red;"><b>Rejected</b></td>
+                                        {% else %}
+                                        <td style="color: blueviolet;"><b>Pending</b></td>
+                                        {% endif %}
+                                      </tr>
+                                      {% endfor %}
+                                    </tbody>
+                                  </table>
+                            </div>
+                        </div>
+                    <!--</div>-->
+                        <div class="container p-0">
                             <div class="row">
                                 <div class="col-6">
                                     
-                                    <div class="card mt-3">
-                                        <div class="card-header p-2">
+                                    <div class="card mt-3 card-h" style="background-color: #edf8fd">
+                                        <div class="card-header p-2 obl">
                                             <h5>Email to your Friend</h5>
                                         </div>
                                         <div class="card-body">
@@ -41,8 +112,8 @@
                                 </div>
                                 <div class="col-6">
 
-                                    <div class="card mt-3">
-                                        <div class="card-header p-2">
+                                    <div class="card mt-3 card-h" style="background-color: #edf8fd">
+                                        <div class="card-header p-2 obl">
                                             <h5>Daily Work Status</h5>
                                         </div>
                                         <div class="card-body">
@@ -58,8 +129,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card mt-3">
-                            <div class="card-header p-2">
+                        <div class="card mt-3 card-h" style="background-color: #edf8fd">
+                            <div class="card-header p-2 obl">
                                 <h5>Take Leaves</h5>
                             </div>
                             <div class="card-body">
@@ -70,18 +141,17 @@
                                 </form>
                             </div>
                         </div>
-                    </div>
                     {% else %}
                     <h5 style="color: red;">Please!</h5> Login to send Email
                     {% endif %}
                     
-                </div>
-            </div>
+               <!-- </div>
+            </div>-->
         </div>
         <div class="col-4">
             {% if user.is_authenticated %}
-            <div class="card">
-                <div class="card-header text-center p-2">
+            <div class="card card-h" style="background-color: #edf8fd">
+                <div class="card-header text-center p-2 obl">
                     <h5>!!! Update Profile !!!</h5>
                 </div>
                 <div class="card-body">
@@ -92,9 +162,10 @@
                     </form>
                 </div>
             </div>
+
             {% else %}
-            <div class="card">
-                <div class="card-header">
+            <div class="card" style="background-color: #edf8fd">
+                <div class="card-header obl">
                     <h4> Register Here </h4>
                 </div>
                 <div class="card-body">

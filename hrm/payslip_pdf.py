@@ -12,24 +12,49 @@ from django.contrib.auth.models import User
 
 
 def generate_pdf(user=None):
+    #-------------------------- Generate unique filename using timestamp--------------------------
     date1 = ''.join(e for e in str(datetime.now()) if e.isalnum())
-    fileName = f'{user}{date1}.pdf'
+    #fileName = f'{user}{date1}.pdf'
+    #-------------------------- End Generate unique filename using timestamp----------------------
+
+
+    #-------------------------- Define Filepath where PDF Save -----------------------------------
+    fileName = f'{user}.pdf'
     filedir = 'media/pdf_file/'
     filepath = os.path.join(filedir,fileName)
+    #--------------------------End Define Filepath where PDF Save --------------------------------
 
-    #----------------- Fetch Data from Database--------------
+
+    #------------------------- Fetch Data from Database-------------------------------------------
     uid = User.objects.get(username=user)
+    x, xy, leave_paid = 0.0, 0.0, 0.0
     employee = Employees.objects.get(user=uid.id)
     if employee.gender == 'M':
         gender = 'Male'
     else:
         gender = 'Female'
-    month = datetime.now().month
+
+    #------------------------- Leave management ---------------------------------------------------    
+    month = 1 #datetime.now().month
     year = datetime.now().year
     if month == 1:
         pre_month = 12
         year = year-1
+        y = LeaveManagement.objects.filter(employee_id=uid.id,leave_type='P',leave_days__year=year).count()
+        yy = (uid.date_joined).date().year
+        if year - yy >= 2:
+            bpl = 12
+        else:
+            bpl = 12 - (uid.date_joined).date().month
+        print("Balanced Paid Leaves : ",bpl)
+        print(y)
+        if y < bpl:
+            z = bpl-y
+            if z > 3:
+                xy = z-3
+                leave_paid = round((employee.salary/22)*xy, 2)
     else:
+        leave_paid = 0.0
         pre_month = month-1
     mnth_name = calendar.month_name[pre_month]
     
@@ -48,24 +73,23 @@ def generate_pdf(user=None):
             else:
                 day = 22
         deduction_amount = round((employee.salary / day)*x,2)
-        total_salary = round((employee.salary - deduction_amount),2)
+        total_salary = round((employee.salary - deduction_amount),2)+leave_paid
     else:
         deduction_amount  = 0.0
-        total_salary = employee.salary
+        total_salary = employee.salary+leave_paid
+    #---------------------------- End Leave Management ------------------------------------------
 
-    # Testing Temporarily PaySlip
+
+    #---------------------------- Generate Payslip PDF ------------------------------------------
     c = canvas.Canvas(filepath, pagesize=letter)
     width, height = letter
     c.setFont('Helvetica',18)
     c.setStrokeColor('grey')
-    #c.rect(1*inch,9.8*inch,2.1*inch,0.6*inch,fill=0)
-
-    im = Image('media/triodeclogo.png', 1.5*inch ,0.5*inch, hAlign="CENTER")
-
-    im.wrapOn(c, width, height)     
-    im.drawOn(c,1*inch, 9.8*inch)
-
-    #c.drawString(1.1*inch,10*inch,'MAiL PLANET')
+                                                                            #------,
+    im = Image('media/triodeclogo.png', 1.5*inch ,0.5*inch, hAlign="CENTER")       #
+    im.wrapOn(c, width, height)                                                    # Add Logo in PDF
+    im.drawOn(c,1*inch, 9.8*inch)                                                  #
+                                                                            #------'
     c.setFont('Helvetica',14)
     c.drawString(3.5*inch,10.2*inch,'Triodec Solutions')
     c.setFont('Helvetica',12)
@@ -75,7 +99,6 @@ def generate_pdf(user=None):
     c.drawString(6.5*inch,10*inch,'PAY SLIP')
     
     c.setLineWidth(1)
-    #c.line(1*inch,9.8*inch,3.2*inch,9.8*inch)
     c.line(6*inch,9.8*inch,7.4*inch,9.8*inch)
     c.line(1*inch,9.7*inch,7.4*inch,9.7*inch)
 
@@ -118,14 +141,14 @@ def generate_pdf(user=None):
     c.rect(3.2*inch,7.1*inch,1*inch,0.6*inch,fill=0)
     c.line(1*inch,7.4*inch,3.2*inch,7.4*inch)
 
-    c.drawString(1.2*inch,7.5*inch,'OT Hours')
-    c.drawString(2.8*inch,7.5*inch,'-')
-    c.drawString(1.2*inch,7.2*inch,'OT Rate')
-    c.drawString(2.8*inch,7.2*inch,'-')
+    c.drawString(1.2*inch,7.5*inch,'Balanced Leaves')
+    c.drawString(2.8*inch,7.5*inch, str(xy))
+    c.drawString(1.2*inch,7.2*inch,'Per Leaves')
+    c.drawString(2.5*inch,7.2*inch,str(round(employee.salary/22,2)))
 
     c.rect(1*inch,6.8*inch,3.2*inch,0.3*inch,fill=0)
-    c.drawString(1.2*inch,6.9*inch,'OT PAYMENT')
-    c.drawString(3.6*inch,6.9*inch,'-')
+    c.drawString(1.2*inch,6.9*inch,'Leaves Payment')
+    c.drawString(3.4*inch,6.9*inch, str(leave_paid))
 
     c.line(4.2*inch,7.4*inch,7.4*inch,7.4*inch)
     c.line(7.4*inch,7.7*inch,7.4*inch,6.8*inch)
@@ -136,20 +159,24 @@ def generate_pdf(user=None):
     c.line(5.8*inch,6.5*inch,5.8*inch,6.8*inch)
 
     c.drawString(1.2*inch,6.6*inch,'Total Payment')
-    c.drawString(3.4*inch,6.6*inch, str(employee.salary))
+    c.drawString(3.4*inch,6.6*inch, str(employee.salary+leave_paid))
     c.drawString(4.5*inch,6.6*inch,'Total Deduction')
     c.drawString(6*inch,6.6*inch, str(deduction_amount))
 
     c.rect(1*inch,6.2*inch,6.4*inch,0.3*inch,fill=0)
+    c.setFont('Helvetica-Bold',12)
     c.drawString(1.2*inch,6.3*inch,'Net Pay')
     c.drawString(3.4*inch,6.3*inch, "Rs. "+str(total_salary))
 
     c.save()
 
-    entry = PaySlip(employee_id = uid, path = filepath, dispatch_date = date.today())
-    entry.save()
+    ex = PaySlip.objects.filter(employee_id = uid, dispatch_date = date.today()).exists()
+    if ex == False:
+        entry = PaySlip(employee_id = uid, path = filepath, dispatch_date = date.today())
+        entry.save()
 
     fs = FileSystemStorage('')
     
     return FileResponse(fs.open(filepath, 'rb'), filename=fileName)
-    #"media/pdf_file/"+f'{user}.pdf'
+
+    #----------------------------- End Generate Payslip pdf -------------------------------------

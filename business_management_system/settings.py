@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'hrm',
     'crispy_forms',
     'django_celery_beat',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

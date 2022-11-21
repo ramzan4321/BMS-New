@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import date
+from django.utils import timezone
 # Create your models here.
 class Employees(models.Model):
     GENDER_CHOICES = (
@@ -30,28 +32,25 @@ class Employees(models.Model):
     def __str__(self):
         return self.user.username
 
-class EmployeesWorkDetails(models.Model):
-    employee_id = models.ForeignKey(User, on_delete=models.CASCADE,related_name='employee_work')
-    working_day = models.DateField()
-    task = models.CharField(max_length=150,null=False,blank=False)
-    project = models.CharField(max_length=150,null=False,blank=False)
-    end_day_time = models.DateTimeField()
-
-    def __str__(self):
-        return str(self.employee_id)
 
 class LeaveManagement(models.Model):
     LEAVE_TYPES = (
         ('P', 'Paid'),
         ('U', 'Unpaid'),
     )
+    STATUS_CHOICE = (
+        ('A','Approved'),
+        ('R','Rejected'),
+        ('P','Pending'),
+    )
     employee_id = models.ForeignKey(User, on_delete=models.CASCADE,related_name='employee_leave')
     leave_reason = models.CharField(max_length=150,null=False,blank=False)
     leave_days = models.DateField()
     leave_type = models.CharField(max_length=1, choices=LEAVE_TYPES)
+    status = models.CharField(max_length =25, null=True, blank=True, default='P', choices=STATUS_CHOICE)
 
     def __str__(self):
-        return str(self.employee_id)
+        return str(self.employee_id)+" "+str(self.leave_days)+" "+self.leave_type
 
 
 class PaySlip(models.Model):
@@ -62,3 +61,62 @@ class PaySlip(models.Model):
     def __str__(self) -> str:
         return str(self.employee_id)+" "+str(self.dispatch_date)
 
+
+class Project(models.Model):
+    STATUS_CHOICE = (
+        ('N','Not Assigned'),
+        ('A','Assigned'),
+        ('C','Completed'),
+    )
+    project_title = models.CharField(max_length =250, null=False, blank=False)
+    start_date = models.DateField(auto_now=True)
+    status = models.CharField(max_length =25, null=True, blank=True, default='N', choices=STATUS_CHOICE)
+    submit_date = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return self.project_title
+
+class TaskTitle(models.Model):
+    STATUS_CHOICE = (
+        ('N','Not Assigned'),
+        ('A','Assigned'),
+        ('C','Completed'),
+    )
+    project_id = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='project_tasktitle')
+    task_title = models.CharField(max_length =250, null=False, blank=False)
+    status = models.CharField(max_length =25, null=True, blank=True,default='N', choices=STATUS_CHOICE)
+    def __str__(self):
+        return self.task_title
+
+class Task(models.Model):
+    STATUS_CHOICE = (
+        ('A','Assigned'),
+        ('C','Completed'),
+    )
+    project_id = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='project_task')
+    task_title = models.ForeignKey(TaskTitle, on_delete=models.CASCADE,max_length =250, null=False, blank=False)
+    employee_id = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True, related_name="employee_task")
+    manager = models.ForeignKey(User,on_delete=models.CASCADE,null=True, blank=True, related_name="manager_task")
+    status = models.CharField(max_length =25, null=True, blank=True,default='N', choices=STATUS_CHOICE)
+    start_date = models.DateField(auto_now=True)
+    submit_date = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return str(self.task_title)+" "+str(self.project_id)
+
+class EmployeesWorkDetails(models.Model):
+    STATUS_CHOICE = (
+        ('N','Not Assigned'),
+        ('A','Assigned'),
+        ('C','Completed'),
+    )
+    employee_id = models.ForeignKey(User, on_delete=models.CASCADE,related_name='employee_work')
+    senior_employee_id = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, max_length=150,null=False,blank=False)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, max_length=150,null=False,blank=False)
+    status = models.CharField(max_length =25, null=True, blank=True,default='N', choices=STATUS_CHOICE)
+    start_date = models.DateField(auto_now=True)
+    submit_date = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return str(self.employee_id)
