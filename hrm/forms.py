@@ -8,10 +8,11 @@ from .models import Employees,EmployeesWorkDetails,LeaveManagement,Project,Task,
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField()
-
+    first_name = forms.CharField(max_length=70, required=True)
+    last_name = forms.CharField(max_length=70, required=True)
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = ['first_name','last_name','username', 'email', 'password1', 'password2']
 
 class EmailForm(forms.Form):
     to = forms.EmailField()
@@ -27,7 +28,7 @@ class UserUpdateForm(forms.ModelForm):
     )
     class Meta:
         model = Employees
-        exclude = ['user','salary','paid_days']
+        exclude = ['name','user','salary','paid_days']
 
 class ProfileForm(forms.ModelForm):
     class Meta:

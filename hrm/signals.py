@@ -6,7 +6,9 @@ from .models import Employees,TaskTitle,Task
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
     if created:
-        Employees.objects.create(user=instance)
+        name = instance.first_name+" "+instance.last_name
+        Employees.objects.create(user=instance, name=name)
+
 
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, **kwargs):
@@ -16,7 +18,6 @@ def save_profile(sender, instance, **kwargs):
 
 @receiver(post_save, sender=TaskTitle)
 def create_profile(sender, instance, created, **kwargs):
-    print(instance)
     if created:
         Task.objects.create(task_title=instance,project_id=instance.project_id)
 

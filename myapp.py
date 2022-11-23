@@ -26,4 +26,4 @@ def post_leave():
     data = r.json()
     print(data)
 
-post_leave()
+#post_leave()

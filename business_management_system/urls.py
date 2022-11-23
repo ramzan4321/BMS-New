@@ -27,6 +27,8 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='hrm/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='hrm/logout.html'), name='logout'),
     path('getpdf/', hrm_views.generate_pdf , name='getpdf'),
+    path('employee_profile_view/', hrm_views.employee_profile , name='employee_profile_view'),
+    path('employee_profile_admin_view/<int:user_id>', hrm_views.employee_profile_admin , name='employee_profile_admin_view'),
     path('send_mail/', hrm_views.send_mail , name='send_mail'),
     path('api/leave/', api_view.LeaveAPI.as_view() , name='employee'),
 

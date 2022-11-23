@@ -30,6 +30,7 @@ def index(request):
                 login(request, user)
             messages.success(request,f'{username}! Welcome to Triodec...')
             return redirect('index')
+        print(form.errors)
     elif request.user.is_authenticated:
         return redirect('profile')
     form = UserRegisterForm()
@@ -203,10 +204,7 @@ def profile(request):
                     tskComp = int((100/total_count)*c_count)
                 else:
                     tskComp = 0
-                tasks = TaskTitle.objects.filter(project_id=project.id)
-                
                 task_check = Task.objects.filter(project_id=project.id).exists()
-                
                 task_result = {}
                 if task_check:
                     qs1 = Task.objects.filter(project_id=project.id,status='C')
@@ -249,6 +247,7 @@ def profile(request):
                         if emp.role == 'STE':
                             avail = 0
                         fetch_task = Task.objects.filter(employee_id=emp.user_id).exclude(status='C')
+                        task_dict_list = []
                         for task in fetch_task:
                             task_dict ={}
                             task_dict['id'] = task.id
@@ -259,10 +258,14 @@ def profile(request):
                             task_dict['start_date'] = task.start_date
                             task_dict['status'] = task.status
                             task_dict['avail'] = avail
+                            task_dict_list.append(task_dict)
                             task_list.append(task_dict)
                         result['employee_id'] = emp.user_id
+                        result['designation'] = emp.designation
+                        result['manager'] = emp.manager
                         result['name'] = emp.name
                         result['tasks'] = task_list
+                        result['tasks_list'] = task_dict_list
                         result1.append(result)
                     else:
                         task_dict ={}
@@ -304,14 +307,11 @@ def profile(request):
 def send_mail(request):
     if request.method == 'POST':
         if request.user.is_authenticated == True:
-            user = User.objects.get(username=request.user)
-            from_email = user.email
+            from_email = request.user.email
             to_email = [request.POST.get('to')]
             subject = request.POST.get('subject')
             body = request.POST.get('message')
             payslip(user=request.user)
-            to_email.append('studybooster31@gmail.com')
-            
             email = EmailMessage(
                 subject = subject,
                 body = body,
@@ -329,14 +329,87 @@ def send_mail(request):
             return redirect('login')
     return redirect('index')
 
+
+def employee_profile_admin(request, user_id):
+    if request.user.is_superuser == True:
+        result = Employees.objects.get(user_id=user_id)
+        year = datetime.now().year
+        chk = LeaveManagement.objects.filter(employee_id=result.id,leave_type='P',leave_days__year=year).count()
+        date_joined = result.user.date_joined
+        joining_date = date_joined.date().strftime("%d %B %Y")
+        xy = date_joined.date().year
+        if xy < year:
+            y_diff = year - xy
+            if y_diff >= 2:
+                chk_last_year = LeaveManagement.objects.filter(employee_id=result.id,leave_type='P',leave_days__year=(year-1)).count()
+            else:
+                chk_last_year = 12 - date_joined.date().month
+            if chk_last_year < 12:
+                balance_leave = 12 - chk_last_year
+                if balance_leave >= 3:
+                    leave_forwarded = 3
+                else:
+                    leave_forwarded = balance_leave
+        else:
+            chk_last_year = 12 - date_joined.date().month
+            leave_forwarded = 0
+        leave_limit = chk_last_year + leave_forwarded
+
+        context = {
+            'result':result,
+            'leave_taken':chk,
+            'leave_left':leave_limit-chk,
+            'leave_limit':leave_limit,
+            'joining_date':joining_date,
+            'dob': result.dob.strftime("%d %B %Y"),
+        }
+        return render(request, 'hrm/employee_profile.html', context)
+
+def employee_profile(request):
+    if request.user.is_authenticated == True:
+        result = Employees.objects.get(user=request.user)
+
+        year = datetime.now().year
+        chk = LeaveManagement.objects.filter(employee_id=request.user,leave_type='P',leave_days__year=year).count()
+        date_joined = result.user.date_joined
+        joining_date = date_joined.date().strftime("%d %B %Y")
+        xy = date_joined.date().year
+        if xy < year:
+            y_diff = year - xy
+            if y_diff >= 2:
+                chk_last_year = LeaveManagement.objects.filter(employee_id=request.user,leave_type='P',leave_days__year=(year-1)).count()
+            else:
+                chk_last_year = 12 - date_joined.date().month
+            if chk_last_year < 12:
+                balance_leave = 12 - chk_last_year
+                if balance_leave >= 3:
+                    leave_forwarded = 3
+                else:
+                    leave_forwarded = balance_leave
+        else:
+            chk_last_year = 12 - date_joined.date().month
+            leave_forwarded = 0
+        leave_limit = chk_last_year + leave_forwarded
+
+        context = {
+            'result':result,
+            'leave_taken':chk,
+            'leave_left':leave_limit-chk,
+            'leave_limit':leave_limit,
+            'joining_date':joining_date,
+            'dob': result.dob.strftime("%d %B %Y"),
+        }
+        return render(request, 'hrm/employee_profile.html', context)
+
+
 def generate_pdf(request):
     '''employees = Employees.objects.filter(role='CEO').values('user__email')
     print(employees[0]['user__email'])
     date1 = ''.join(e for e in str(datetime.now()) if e.isalnum())
     print(date1)
     p = LeaveManagement.objects.filter(employee_id=request.user,leave_type='P',leave_days__year='2022').count()
-    print("Paid leaves had been taken :",p)
-    payslip(user=request.user)'''
+    print("Paid leaves had been taken :",p)'''
+    payslip(user=request.user)
     fs = FileSystemStorage('')
     
     return FileResponse(fs.open("media/pdf_file/"+f'{request.user}.pdf', 'rb'), filename=f'{request.user}.pdf')
