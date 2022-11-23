@@ -1,0 +1,20 @@
+.obdt {
+    background-color: #003b61;
+    color: white;
+}
+.obd {
+    background-color: #046997;
+    color: white;
+}
+.obl {
+    background-color: #318db2;
+    color: white;
+}
+.form_card {
+    height: 300px;
+    overflow-y: scroll;
+}
+.card-h {
+    height: 350px;
+    overflow-y: scroll;
+}
