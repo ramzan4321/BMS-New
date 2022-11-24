@@ -4,14 +4,15 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.admin.widgets import AdminDateWidget
 from django.contrib.auth.models import User
-from .models import Employees,EmployeesWorkDetails,LeaveManagement
+from .models import Employees,EmployeesWorkDetails,LeaveManagement,Project,Task, TaskTitle
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField()
-
+    first_name = forms.CharField(max_length=70, required=True)
+    last_name = forms.CharField(max_length=70, required=True)
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = ['first_name','last_name','username', 'email', 'password1', 'password2']
 
 class EmailForm(forms.Form):
     to = forms.EmailField()
@@ -27,7 +28,7 @@ class UserUpdateForm(forms.ModelForm):
     )
     class Meta:
         model = Employees
-        exclude = ['user','salary','paid_days']
+        exclude = ['name','user','salary','paid_days']
 
 class ProfileForm(forms.ModelForm):
     class Meta:
@@ -57,4 +58,34 @@ class LeaveForm(forms.ModelForm):
     )
     class Meta:
         model = LeaveManagement
-        exclude = ['employee_id']
+        exclude = ['employee_id','status']
+
+class ProjectForm(forms.ModelForm):
+    start_date = forms.DateField(
+        widget=forms.TextInput(     
+        attrs={'type': 'date'} 
+    )
+    )
+    submit_date = forms.DateField(
+        widget=forms.TextInput(     
+        attrs={'type': 'date'} 
+    )
+    )
+    class Meta:
+        model = Project
+        fields = ['project_title']
+
+class ProjectTitleForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = ['project_title']
+
+class TaskTitleForm(forms.ModelForm):
+    class Meta:
+        model = TaskTitle
+        fields = ['project_id', 'task_title']
+
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        exclude = ['start_date','submit_date']
