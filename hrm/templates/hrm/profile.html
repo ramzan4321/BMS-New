@@ -1,5 +1,5 @@
-{% extends 'hrm/base.html' %}
-{% block body %}
+{% extends 'layouts/emp_base.html' %}
+{% block content %}
 {% load crispy_forms_tags %}
 
 
@@ -21,13 +21,13 @@
                                 <p>{{ user.email }}</p>
                             </div>
                         </div>-->
-                        <div class="card card-h" style="background-color: #edf8fd;">
-                            <div class="card-header obl">
-                                <h5>Your Working Status</h5>
+                        <div class="card card-h">
+                            <div class="card-header">
+                                <h4 class="p-0 m-0">Your Working Status</h4>
                             </div>
-                            <div class="card-body">
-                                <table class="table table-striped">
-                                    <thead>
+                            <div class="card-body p-0">
+                                <table class="table align-items-center table-flush">
+                                    <thead class="thead-light">
                                       <tr>
                                         <th scope="col">Project</th>
                                         <th scope="col">Task</th>
@@ -54,13 +54,13 @@
                                   </table>
                             </div>
                         </div>
-                        <div class="card card-h mt-2" style="background-color: #edf8fd;">
-                            <div class="card-header obl">
-                                <h5>Leave Status</h5>
+                        <div class="card card-h mt-2">
+                            <div class="card-header">
+                                <h4 class="p-0 m-0">Leave Status</h4>
                             </div>
-                            <div class="card-body">
-                                <table class="table table-striped">
-                                    <thead>
+                            <div class="card-body p-0">
+                                <table class="table align-items-center table-flush">
+                                    <thead class="thead-light">
                                       <tr>
                                         <th scope="col">Date</th>
                                         <th scope="col">Leave Type</th>
@@ -96,9 +96,9 @@
                             <div class="row">
                                 <div class="col-6">
                                     
-                                    <div class="card mt-3 card-h" style="background-color: #edf8fd">
-                                        <div class="card-header p-2 obl">
-                                            <h5>Email to your Friend</h5>
+                                    <div class="card mt-3 card-h">
+                                        <div class="card-header">
+                                            <h4 class="p-0 m-0">Email to your Friend</h4>
                                         </div>
                                         <div class="card-body">
                                             <form method="POST" action="{% url 'send_mail' %}">
@@ -112,9 +112,9 @@
                                 </div>
                                 <div class="col-6">
 
-                                    <div class="card mt-3 card-h" style="background-color: #edf8fd">
-                                        <div class="card-header p-2 obl">
-                                            <h5>Daily Work Status</h5>
+                                    <div class="card mt-3 card-h">
+                                        <div class="card-header">
+                                            <h4 class="p-0 m-0">Daily Work Status</h4>
                                         </div>
                                         <div class="card-body">
                                             <form method="POST" action="#">
@@ -129,9 +129,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card mt-3 card-h" style="background-color: #edf8fd">
-                            <div class="card-header p-2 obl">
-                                <h5>Take Leaves</h5>
+                        <div class="card mt-3 card-h">
+                            <div class="card-header">
+                                <h4 class="p-0 m-0">Take Leaves</h4>
                             </div>
                             <div class="card-body">
                                 <form method="POST" action="#">
@@ -150,9 +150,9 @@
         </div>
         <div class="col-4">
             {% if user.is_authenticated %}
-            <div class="card card-h" style="background-color: #edf8fd">
-                <div class="card-header text-center p-2 obl">
-                    <h5>!!! Update Profile !!!</h5>
+            <div class="card card-h">
+                <div class="card-header text-center">
+                    <h4 class="p-0 m-0">Update Profile</h4>
                 </div>
                 <div class="card-body">
                     <form method="POST" enctype="multipart/form-data">

@@ -1,0 +1,25 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Profile {% endblock title %}
+
+{% block content %}
+
+<nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-0 md-4 mt-2">
+    <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+      <li class="breadcrumb-item">
+        <a href="#"><i class="fas fa-home"></i></a>
+      </li>
+      <li class="breadcrumb-item"><a href="#">Dashboards</a></li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Documents
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {{ emp.name }}
+      </li>
+    </ol>
+  </nav>
+
+{% include "includes/emp-profile-header.html" %}
+
+
+{% endblock %}

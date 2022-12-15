@@ -1,11 +1,14 @@
 from django.core.mail import EmailMessage
+from datetime import datetime
+import calendar
 from django.contrib.auth.models import User
-from .models import Employees, PaySlip
+from .models import Employees, PaySlip, CompanyAccount
 from .payslip_pdf import generate_pdf as payslip
+from django.db.models import Sum
 
 def send_review_email():
-    #employees = Employees.objects.exclude(role='CEO')
-    employees = Employees.objects.filter(user__username='Ramzan123')
+    employees = Employees.objects.exclude(role='CEO')
+    #employees = Employees.objects.filter(user__username='Ramzan123')
     ceo_query = Employees.objects.filter(role='CEO').values('user__email')
     ceo_email = ceo_query[0]['user__email']
 
@@ -27,6 +30,10 @@ def send_review_email():
         email.attach_file(pdf_path)
         #email.attach_file("media/pdf_file/"+f'{emp_email.username}.pdf')
         email.send()
+    mnth = calendar.month_name[datetime.now().month] 
+    payslip_sum = PaySlip.objects.aggregate(Sum('earning'))
+    entry = CompanyAccount(title=f'{mnth} Payroll',type='D',category='Payroll Expense',amount=payslip_sum['earning__sum'])
+    entry.save()
     return "Email Send..."
 
 def send_leave_email(data):

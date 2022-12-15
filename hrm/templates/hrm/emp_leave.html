@@ -1,0 +1,228 @@
+{% extends 'layouts/emp_base.html' %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+<!-- The Modal -->
+<input type="hidden" class="btn btn-primary popup" data-toggle="modal" data-target="#myModal">
+</input>
+<div class="modal fade" id="myModal">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+    
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Sorry</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      
+      <!-- Modal body -->
+      <div class="modal-body" id="myalert">
+      </div>
+      
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row py-2">
+        <div class="col-md-8">
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-0 md-4">
+                <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                  <li class="breadcrumb-item">
+                    <a href="#"><i class="fas fa-home"></i></a>
+                  </li>
+                  <li class="breadcrumb-item"><a href="#">Dashboards</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">
+                    Leave
+                  </li>
+                </ol>
+              </nav>
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="p-0 m-0">Leave Status</h4>
+                </div>
+                <div class="card-body p-0 table-responsive">
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                          <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Leave Type</th>
+                            <th scope="col">Leave Reason</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for leave in leaves %}
+                          <tr id="tbr{{leave.id}}" class="tbr">
+                            <th scope="row" id="days{{leave.id}}">{{ leave.leave_days|date:"Y-m-d" }}</th>
+                            {% if  leave.leave_type == 'P' %}
+                            <td id="type{{leave.id}}">Paid</td>
+                            {% else %}
+                            <td id="type{{leave.id}}">Unpaid</td>
+                            {% endif %}
+                            <td id="reason{{leave.id}}">{{ leave.leave_reason }}</td>
+                            {% if  leave.status == 'A' %}
+                            <td id="status{{leave.id}}" style="color: green;">Approved</td>
+                            {% elif leave.status == 'R' %}
+                            <td id="status{{leave.id}}" style="color: red;">Rejected</td>
+                            {% else %}
+                            <td id="status{{leave.id}}" style="color: blueviolet;">Pending</td>
+                            {% endif %}
+                            <td id="btdiv{{leave.id}}">
+                                <button class="btn btn-success btn-sm upd" id="upd{{leave.id}}">Edit</button>
+                                <button class="btn btn-danger btn-sm" id="can{{leave.id}}" href="/leave_cancel/{{ leave.id }}">Cancel</button>
+                              </td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-0 md-4">
+                <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                  <li class="breadcrumb-item">
+                    <a href="#"><i class="fas fa-home"></i></a>
+                  </li>
+                  <li class="breadcrumb-item active" aria-current="page">
+                   Employee's Upcoming OFF
+                  </li>
+                </ol>
+              </nav>
+              <div class="card p-0">
+                <div class="card-body p-2">
+                  {% for leave in upcoming %}
+                  {% if forloop.counter0|divisibleby:2 %}
+                  <div class="leave-box clearfix py-2 px-1 shadow my-2 rounded" style="border: 1px solid rgb(233, 233, 233);">
+                    <p>
+                    <a href="#" class="avatar avatar-sm rounded-circle float-right" data-toggle="tooltip" data-original-title="Ryan Tompson">
+                      <img alt="Image placeholder" src="{{ leave.employee_id.employees.image.url }}">
+                    </a>
+                    <span class="mr-2 float-right text-dark">{{ leave.employee_id.employees.name }}</span>
+                    </p>
+                    <p>
+                    <span class="float-left text-sm text-muted">{{ leave.leave_days }}</span>
+                  </p>
+                  </div>
+                  {% else %}
+                  <div class="leave-box clearfix py-2 px-1 shadow rounded" style="border: 1px solid rgb(233, 233, 233);">
+                    <p class="my-0 py-0"><a href="#" class="avatar avatar-sm rounded-circle float-left" data-toggle="tooltip" data-original-title="Ryan Tompson">
+                      <img alt="Image placeholder" src="{{ leave.employee_id.employees.image.url }}">
+                    </a>
+                    <span class="ml-2">{{ leave.employee_id.employees.name }}</span>
+                </p class="my-0 py-0">
+                <p>
+                    <span class="float-right text-sm text-muted">{{ leave.leave_days }}</span>
+                    </p>
+                  </div>
+                  {% endif %}
+                {% endfor %}
+                
+                </div>
+              </div>
+        </div>
+
+        <div class="col-md-8">
+
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="p-0 m-0">Take Leaves</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="#">
+                        {% csrf_token %}
+                        {{ l_form|crispy }}
+                        <button class="btn btn-outline-success" type="submit" style="width: 100%;">Submit</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block javascripts %}
+
+<script type="text/javascript">
+$('.upd').on('click',function() {
+    a = this.id.slice(3,);
+    var days = document.getElementById("days"+a).innerHTML;
+    var type = document.getElementById("type"+a).innerHTML;
+    var reason = document.getElementById("reason"+a).innerHTML;
+    var status = document.getElementById("status"+a).innerHTML;
+    $("#tbr"+a).empty();
+    var mystr = ""
+    var mystr = `<form method="post">
+                          {% csrf_token %}
+                            <th scope="row" style="width:20%"><input type="date" name="ldate" value="${days}"></th>
+                            <td style="width:20%"><input type="text" name="ltype" value="${type}"></td>
+                            
+                            <td style="width:20%"><input type="textarea" name="lreason" value="${reason}"></td>
+                            <td style="width:20%"><label type="text" name="lstatus value="${status}">${status}</label></td>
+                            
+                            <td style="width:20%">
+                                <button class="btn btn-success btn-sm" onclick="aupd(${a})" type="submit">Update</button>
+                            </td>
+                        </form>
+    `;
+    document.getElementById("tbr"+a).innerHTML = mystr;
+})
+
+function aupd(a) {
+  console.log("update is working",a)
+  var formdata={
+    'id':a,
+    'date': $('input[name=ldate]').val(),
+    'type': $('input[name=ltype]').val(),
+    'reason': $('input[name=lreason]').val(),
+    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+  }
+  $.ajax({
+    type:'POST',
+    url:'/updateleave/',
+    data:formdata,
+    encode:true
+  })
+  .done(function(data){
+    data = JSON.parse(data);
+    if (data['status']=='success')
+    {
+      $('#tbr'+a).empty();
+      var date = data["date"];
+      var type = data["type"];
+      var reason = data["reason"];
+      mystr = ""
+      mystr = `
+      <th scope="row">${date}</th>
+                            <td>${type}</td>
+                            
+                            <td>${reason}</td>
+                            <td>Pending</td>
+                            
+                            <td>
+                              <button class="btn btn-success btn-sm upd" id="upd${a}">Edit</button>
+                                <button class="btn btn-danger btn-sm" id="can${a}" href="/leave_cancel/${a}">Cancel</button>
+                           
+                            </td>`
+                            document.getElementById("tbr"+a).innerHTML = mystr;
+    }
+    else {
+      var msg = data["msg"];
+      alert(msg)
+    }
+  })
+  console.log(formdata)
+}
+
+</script>
+
+{% endblock %}

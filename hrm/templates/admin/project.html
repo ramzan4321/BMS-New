@@ -1,0 +1,300 @@
+{% extends 'layouts/base.html' %} {% load crispy_forms_tags %} {% block content %}
+<div class="container" style="background-color: white; border-radius: 10px">
+    <div class="row pt-2">
+      <div class="col-md-12 px-1">
+        <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-0 md-4">
+            <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+              <li class="breadcrumb-item">
+                <a href="#"><i class="fas fa-home"></i></a>
+              </li>
+              <li class="breadcrumb-item"><a href="#">Dashboards</a></li>
+              <li class="breadcrumb-item active" aria-current="page">
+                Project and Task Management
+              </li>
+            </ol>
+          </nav>
+        <div class="card">
+            <div class="table-responsive">
+            <!-- Projects table -->
+            <table class="table align-items-center table-flush">
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col">Project</th>
+                    <th scope="col">Employees</th>
+                    <th scope="col">Task</th>
+                    <th scope="col">
+                        <span style="float: right;background-color: white;border-radius: 10px;padding: 3px;" class="mt-2">
+                        <span style="color: green; padding: 5px; border-radius: 10px">
+                            <b>Completed</b>
+                        </span>
+                        <span style="color: rgb(255, 99, 132);padding: 5px;border-radius: 10px;">
+                            <b>Assigned</b>
+                            </span>
+                        <span style="color: rgb(54, 162, 235); padding: 5px; border-radius: 10px">
+                            <b>Not Assigned</b>
+                        </span>
+                      </span>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for project in results %}
+                <tr>
+                    <th scope="row" style="width:20%;">{{ project.project_title }}</th>
+                    <td>
+                    <div class="avatar-group">
+                        {% for img in project.empimg %}
+                        <a href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip" data-original-title="{{ img.employees.name }}">
+                          <img alt="Image placeholder" src="{{ img.employees.image.url }}">
+                        </a>
+                        {% endfor %}
+                    </div>
+                    </td>
+                    <td class="text-wrap" style="width:50%;">{% for tasks in project.tasks %}
+                        <b style="color: red"> </b>
+                        {% if tasks.status == 'C' %}
+                        <span style="color: green; padding: 0px; border-radius: 10px"
+                          ><b>{{tasks.task_title}}, </b></span
+                        >
+                        {% elif tasks.status == 'A' %}
+                        <span
+                          style="
+                            color: rgb(255, 99, 132);
+                            padding: 0px;
+                            border-radius: 10px;
+                            width: 100px;
+                          "
+                          ><b>{{tasks.task_title}}, </b></span
+                        >
+                        {% else %}
+                        <span
+                          style="
+                            color: rgb(54, 162, 235);
+                            padding: 0px;
+                            border-radius: 10px;
+                            width: 100px;
+                          "
+                          ><b>{{tasks.task_title}}, </b></span
+                        >
+                        {% endif %} {% endfor %}</td>
+                    <td>
+                    <div class="d-flex align-items-center">
+                        <span class="mr-2">{{project.tskcomp}}%</span>
+                        <div>
+                        <div class="progress">
+                            <div
+                            class="progress-bar bg-gradient-success"
+                            role="progressbar"
+                            aria-valuenow="{{project.tskcomp}}"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                            style="width: {{project.tskcomp}}%"
+                            ></div>
+                        </div>
+                        </div>
+                    </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>Employee's Status</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-7 table-responsive">
+
+                <table class="table align-items-center table-flush">
+                  <thead class="thead-light">
+                  <tr>
+                      <th scope="col">Employee</th>
+                      <th scope="col">Manager</th>
+                      <th scope="col">Project</th>
+                      <th scope="col">Task (status)</th>
+                      <th scope="col">Availability</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                      {% for employee in employees %}
+                  <tr>
+                      <th scope="row" style="width:20%;">{{ employee.name}}</th>
+                      <th scope="row" style="width:20%;">{{ employee.manager.name}}</th>
+                      <td>{% for proj in employee.proj %} {% if proj != 0 %}  {{ proj }} {% else %} <span>None</span> {% endif %} {% endfor %}</td> 
+                      <td>{% for task in employee.tasks %}
+                        {% if task.status == 'C' %}
+                <span style="color: green">{{ task.task_title}} <b>(Completed)</b></span>
+                {% elif task.status == 'N' %}
+                <span style="color: red">{{ task.task_title}} <b>(Not Assigned)</b></span>
+                {% elif task.status == None %}
+                <span style="color: red">{{ task.task_title}} <b>(Not Assigned)</b></span>
+                {% else %}
+                <span style="color: rgb(255, 99, 132)">{{ task.task_title}} <b>(Assigned)</b></span>
+                {% endif %}
+                {% endfor %}
+                </td>
+                {% if employee.avail == None or employee.avail == 100 %}
+                <td style="background-color: green; color: white">100 %</td>
+                {% elif employee.avail == 0 %}
+                <td style="background-color: orangered; color: black">0 %</td>
+                {% else %}
+                <td style="background-color: lightgreen; color: black">{{ employee.avail }} %</td>
+                {% endif %}
+                  {% endfor %}
+                  </tbody>
+              </table>
+
+              </div>
+              <div class="col-md-5">
+                <div class="card">
+                  <div class="card-header bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col">
+                        <h6 class="text-uppercase text-muted ls-1 mb-1">Performance</h6>
+                        <h5 class="h3 mb-0">Total Task</h5>
+                      </div>
+                    </div>
+                  </div>
+                <div class="card-body">
+                  <!-- Chart -->
+                  <div class="chart">
+                    <canvas id="chart-bar" class="chart-canvas" height="300"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 my-2">
+              <div class="card form_card">
+                <div class="card-header obl">
+                  <h4>Add Project</h4>
+                </div>
+                <div class="card-body">
+                  <form method="post">
+                    {% csrf_token %} {{ pr_form|crispy }}
+                    <button
+                      class="btn btn-outline-success"
+                      type="submit"
+                      style="width: 100%"
+                    >
+                      Submit
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 my-2">
+              <div class="card form_card">
+                <div class="card-header obl">
+                  <h4>Add Task</h4>
+                </div>
+                <div class="card-body">
+                  <form method="post">
+                    {% csrf_token %} {{ t_form|crispy }}
+                    <button
+                      class="btn btn-outline-success"
+                      type="submit"
+                      style="width: 100%"
+                    >
+                      Submit
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 my-2">
+              <div class="card form_card">
+                <div class="card-header obl">
+                  <h4>Assign Task</h4>
+                </div>
+                <div class="card-body">
+                  <form method="post">
+                    {% csrf_token %} {{ ta_form|crispy }}
+                    <button
+                      class="btn btn-outline-success"
+                      type="submit"
+                      style="width: 100%"
+                    >
+                      Submit
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+window.onload = setBarChart();
+
+function setBarChart() {
+	var emp_label = []
+	var emp_data = []
+	{% for employee in employees %}
+	emp_label.push('{{employee.name}}');
+	emp_data.push('{{employee.t_count}}');
+	{% endfor %}
+	console.log(emp_label)
+	//
+	// Variables
+	//
+
+	var $chart = $('#chart-bar');
+
+
+	//
+	// Methods
+	//
+
+	// Init chart
+	function initChart($chart) {
+
+		// Create chart
+		var ordersChart = new Chart($chart, {
+			type: 'pie',
+			data: {
+				labels: emp_label,
+				datasets: [{
+					label: 'Task',
+					data: emp_data,
+          backgroundColor: [
+      'rgb(255, 99, 132)',
+      'rgb(54, 162, 235)', // firozi
+      'rgb(201, 203, 207)', //white
+      'rgb(255, 205, 86)', //Yellow
+      'rgb(255, 98, 132)',
+      'rgb(75, 192, 192)',
+      'rgb(255, 205, 76)',
+      
+      'rgb(50, 162, 235)'
+    ],
+    hoverOffset: 4
+        }]
+			}
+		});
+
+		// Save to jQuery object
+		$chart.data('chart', ordersChart);
+	}
+
+
+	// Init chart
+	if ($chart.length) {
+		initChart($chart);
+	}
+
+};
+</script>
+<script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+<script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock %}

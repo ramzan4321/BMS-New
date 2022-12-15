@@ -1,145 +1,165 @@
-{% extends 'hrm/base.html' %} {% load crispy_forms_tags %} {% block body %}
+{% extends 'layouts/emp_base.html' %}
 
-<div class="container">
-  <div class="row">
-    <div class="col-12 my-2">
-      <div
-        class="row p-2 mx-1"
-        style="background-color: white; border-radius: 20px"
-      >
-        <div class="col-2">
-          <img
-            class="rounded-square"
-            src="{{ result.image.url }}"
-            style="
-              width: 100%;
-              border-radius: 20px;
-              border: 5px inset lightgray;
-              padding: 5px;
-            "
-          />
-        </div>
-        <div class="col-5">
-          <table class="table">
-            <tbody>
-              <tr>
-                <th scope="col">Userame</th>
-                <td>{{ result.user.username }}</td>
-              </tr>
-              <tr>
-                <th scope="col">Email</th>
-                <td>{{ result.user.email }}</td>
-              </tr>
-              <tr>
-                <th scope="col">Date of Joined</th>
-                <td>{{ joining_date }}</td>
-              </tr>
-            </tbody>
-          </table>
-          <!--<p><b>Username : </b>{{ result.user.username }}</p>
-                <p><b>Email : </b>{{ result.user.email }}</p>
-                <p><b>Date of Joined : </b>{{ result.user.date_joined }}</p>-->
-        </div>
-        <div class="col-5">
-          <table class="table">
-            <tbody>
-              <tr>
-                <th scope="col">Leaves Left</th>
-                <td>{{ leave_left }}</td>
-              </tr>
-              <tr>
-                <th scope="col">Leaves Taken</th>
-                <td>{{ leave_taken }}</td>
-              </tr>
-              <tr>
-                <th scope="col">Total Leaves</th>
-                <td>{{ leave_limit }}</td>
-              </tr>
-            </tbody>
-          </table>
-          <!--<p><b>Leaves Left : </b>{{ leave_left }}</p>
-                <p><b>Leaves Taken : </b>{{ leave_taken }}</p>
-                <p><b>Total Leaves : </b>{{ leave_limit }}</p>-->
+{% block title %} Profile {% endblock title %}
+
+{% block content %}
+
+<nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-0 md-4 mt-2">
+  <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+    <li class="breadcrumb-item">
+      <a href="#"><i class="fas fa-home"></i></a>
+    </li>
+    <li class="breadcrumb-item"><a href="#">Dashboards</a></li>
+    <li class="breadcrumb-item active" aria-current="page">
+      Profile
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+      {{ emp.name }}
+    </li>
+  </ol>
+</nav>
+
+{% include "includes/emp-profile-header.html" %}
+
+<div class="container-fluid" style="background-color: #fff;">
+  <div class="row py-2">
+    <div class="col-md-5">
+      <div class="border rounded px-2">
+        <h2 class="p-2">About</h2>
+        <div class="px-2">
+          <span class="text-muted">{{ emp.about }}</span>
         </div>
       </div>
-      <!--<div class="content-section" style="background-color: white; border-radius:20px;">
-            <div class="media p-2">
-                <img class="rounded-square" src="{{ result.image.url }}" style="width: 15%; border-radius:20px; border: 5px inset lightgray ;padding: 5px;">
-                <div class="media-body ml-4 mt-4">
-                    <p><b>Username : </b>{{ result.user.username }}</p>
-                    <p><b>Email : </b>{{ result.user.email }}</p>
-                    <p><b>Date of Joined : </b>{{ result.user.date_joined }}</p>
-                </div>
-                <div class="media-body ml-4 mt-4" style="border-left: 5px solid #318db2;padding-left:12%;">
-                    <p><b>Leaves Left : </b>{{ leave_left }}</p>
-                    <p><b>Leaves Taken : </b>{{ leave_taken }}</p>
-                    <p><b>Total Leaves : </b>{{ leave_limit }}</p>
-                </div>
+    </div>
+    <div class="col-md-7">
+      <div class="border rounded px-2">
+        <h2 class="p-2">Reporting Team</h2>
+        <div class="row">
+          {% for rep in reporting %}
+          <div class="col-md-4">
+          <div class="row p-2">
+            <div class="col-md-3 px-2">
+              <a href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip" data-original-title="{{ rep.name }}" style="width: 50px ;">
+                <img alt="Image placeholder" src="{{ rep.image.url }}">
+              </a>
             </div>
-        </div>-->
-      <div class="card mt-2">
-        <div class="card-header obl">
-          <h6>Employee Profile Details</h6>
+            <div class="col-md-9 mt--2">
+              <span class=""><small>{{ rep.name }}</small></span>
+              <span class="text-sm"><small>{{ rep.designation }}</small></span>
+            </div>
+          </div>
         </div>
-        <div class="card-body">
-          <table class="table table-striped">
-            <tbody>
-              <tr>
-                <th scope="col">Employee Name</th>
-                <td>{{ result.name }}</td>
-              </tr>
-              <tr>
-                <th scope="col">Designation</th>
-                <td>{{ result.designation }}</td>
-              </tr>
-              <tr>
-                <th scope="col">Department</th>
-                <td>{{ result.department }}</td>
-              </tr>
-              <tr>
-                <th scope="col">Manager</th>
-                <td>{{ result.manager.name }}</td>
-              </tr>
-              <tr>
-                <th scope="col">Date of Birth</th>
-                <td>{{ dob }}</td>
-              </tr>
-              <tr>
-                <th scope="col">Address</th>
-                <td>
-                  {{ result.address }}, {{ result.city }}, {{ result.state }}
-                </td>
-              </tr>
-              <tr>
-                <th scope="col">Bank Name</th>
-                <td>{{ result.bank_name }}</td>
-              </tr>
-              <tr>
-                <th scope="col">Bank Account No.</th>
-                <td>{{ result.bank_account_no }}</td>
-              </tr>
-              <tr>
-                <th scope="col">IFSC code</th>
-                <td>{{ result.ifsc_code }}</td>
-              </tr>
-              <tr>
-                <th scope="col">Leaves Taken</th>
-                <td>{{ leave_taken }}</td>
-              </tr>
-              <tr>
-                <th scope="col">Leaves Left</th>
-                <td>{{ leave_left }}</td>
-              </tr>
-              <tr>
-                <th scope="col">Total Leaves</th>
-                <td>{{ leave_limit }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        {% endfor %}
+      </div>
       </div>
     </div>
   </div>
 </div>
 
-{% endblock %}
+<!-- Page content -->
+
+
+<div class="container-fluid mt-2">
+  <div class="row">
+    <div class="col-xl-4 order-xl-2">
+      <div class="card card-profile">
+        <img src="/static/assets/img/theme/img-1-1000x600.jpg" alt="Image placeholder" class="card-img-top">
+        <div class="row justify-content-center">
+          <div class="col-lg-3 order-lg-2">
+            <div class="card-profile-image">
+              <a href="#">
+                <img src="{{ emp.image.url }}" class="rounded-circle">
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
+          <div class="d-flex justify-content-between">
+            <a href="#" class="btn btn-sm btn-info  mr-4 ">Connect</a>
+            <a href="#" class="btn btn-sm btn-default float-right">Message</a>
+          </div>
+        </div>
+        <div class="card-body pt-0">
+          <div class="text-center">
+            <h5 class="h3">
+              {{ emp.name }}
+            </h5>
+            <div class="h5 font-weight-300">
+              Date of Joined : {{ joining_date }}
+            </div>
+            <div class="h5 mt-4">
+              <i class="ni business_briefcase-24 mr-2"></i>
+              {% if emp.role == 'STE' %}
+              Standard Employee - Triodec Solutions LLP
+              {% else %}
+              Senior Employee - Triodec Solutions LLP
+              {% endif %}
+            </div>
+            <div>
+              <i class="ni education_hat mr-2"></i> {{ emp.designation }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <div class="card-profile-stats d-flex justify-content-center">
+                <div>
+                  <span class="heading">{{ proj }}</span>
+                  <span class="description">Projects</span>
+                </div>
+                <div>
+                  <span class="heading">{{ task_as }}</span>
+                  <span class="description text-sm">Task <small>(Assigned)</small></span>
+                </div>
+                <div>
+                  <span class="heading">{{ task_com }}</span>
+                  <span class="description">Task <small>(Finished)</small></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr class="m-0 p-0">
+          <div class="row">
+            <div class="col">
+              <div class="card-profile-stats d-flex justify-content-center">
+                <div>
+                  <span class="heading">{{ leave_taken }}</span>
+                  <span class="description">Total <small>(Leaves)</small></span>
+                </div>
+                <div>
+                  <span class="heading">{{ paid_leave }}</span>
+                  <span class="description">Paid <small>(Leaves)</small></span>
+                </div>
+                <div>
+                  <span class="heading">{{ unpaid_leave }}</span>
+                  <span class="description">UnPaid <small>(Leaves)</small></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-8 order-xl-1">
+      <div class="card">
+        <div class="card-header">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h3 class="mb-0">Edit profile </h3>
+            </div>
+            <div class="col-4 text-right">
+              <a href="#!" class="btn btn-sm btn-primary">Settings</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% include "includes/footer.html" %}
+
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}{% endblock javascripts %}

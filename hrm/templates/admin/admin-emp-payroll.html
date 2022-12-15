@@ -1,0 +1,78 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Profile {% endblock title %}
+
+{% block content %}
+
+<nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-0 md-4 mt-2">
+    <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+      <li class="breadcrumb-item">
+        <a href="#"><i class="fas fa-home"></i></a>
+      </li>
+      <li class="breadcrumb-item"><a href="#">Dashboards</a></li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Payroll
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {{ emp.name }}
+      </li>
+    </ol>
+  </nav>
+
+  {% include "includes/admin-emp-profile-header.html" %}
+
+
+<div class="container-fluid">
+    <div class="row bg-neutral my-3 mx-1 py-2 border-rounded">
+        <div class="col-md-6">
+            <div class="p-2 border">
+                <h2 class="text-muted">Current Payout <span class="text-sm">[ December ]</span></h2>
+                94000 <span class="text-sm"><small>[Finalized]</small></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="p-2 border">
+                <h2 class="text-muted">Upcoming Payout <span class="text-sm">[ January ]</span></h2>
+                94000 <span class="text-sm"><small>[Not Finalized]</small></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header py-2">
+                    <h2>Payroll History</h2>
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table align-items-center table-flush">
+                        <thead>
+                          <tr>
+                            <th scope="col">Month</th>
+                            <th scope="col">Leave Taken</th>
+                            <th scope="col">Deduction</th>
+                            <th scope="col">Salary</th>
+                            <th scope="col">Earning</th>
+                            <th scope="col">Payslip</th>
+                          </tr>
+                        </thead>
+                        <tbody id="employee">
+                          {% for x in payslip %}
+                          <tr>
+                            <th scope="row">{{ x.month }}</th>
+                            <td>{{ x.l_count }}</td>
+                            <td>{{ x.deduction }}</td>
+                            <td>{{ x.salary }}</td>
+                            <td>{{ x.earning }}</td>
+                            <td><a class="btn btn-success btn-sm" href="/payslip_download/{{x.payslip_id}}">DOWNLOAD</a></td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,358 @@
+{% extends 'layouts/base.html' %} {% load crispy_forms_tags %} {% block content %}
+<!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Large modal</button>
+-->
+<div class="modal fade bd-example-modal-lg mymodal" tabindex="-1" role="dialog" id="mymodal" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl pl-3 mt-0" style="float: right;width: 100%;">
+    <div class="modal-content">
+      <div class="container-fluid">
+        <div class="row"> 
+          <div class="col-md-12 my-4">
+            <h1>Pay Slips  <i class="fa fa-download fa-2X" aria-hidden="true"></i></h1>
+            <span>Here You can manage all payslips generated till now.</span>
+          </div>
+          <div class="col-md-12">
+            <select class="custom-select mr-sm-2 my-3" id="yearselect" style="width: 23%;">
+              <option selected value="2022">Year 2022</option>
+              <option value="2021">Year 2021</option>
+              <option value="2020">Year 2020</option>
+              <option value="2019">Year 2019</option>
+            </select>
+          </div>
+        </div>
+        <div class="row" id="payslip-pdf">
+          <div class="col-md-3">
+            <div class="card">
+              <div class="card-header bg-success">
+                <h3>Pay slips</h3>
+              </div>
+              <div class="card-body">
+                <ul class="navbar-nav border">
+                  <a href="#" onclick="getpdf(12)"><li class="p-2 bg-white border-bottom nav-link">December</li></a>
+                  <a href="#" onclick="getpdf(11)"><li class="p-2 bg-white border-bottom nav-link">November</li></a>
+                  <a href="#" onclick="getpdf(10)"><li class="p-2 bg-white border-bottom nav-link">October</li></a>
+                  <a href="#" onclick="getpdf(9)"><li class="p-2 bg-white border-bottom nav-link">September</li></a>
+                  <a href="#" onclick="getpdf(8)"><li class="p-2 bg-white border-bottom nav-link">August</li></a>
+                  <a href="#" onclick="getpdf(7)"><li class="p-2 bg-white border-bottom nav-link">July</li></a>
+                  <a href="#" onclick="getpdf(6)"><li class="p-2 bg-white border-bottom nav-link">June</li></a>
+                  <a href="#" onclick="getpdf(5)"><li class="p-2 bg-white border-bottom nav-link">May</li></a>
+                  <a href="#" onclick="getpdf(4)"><li class="p-2 bg-white border-bottom nav-link">April</li></a>
+                  <a href="#" onclick="getpdf(3)"><li class="p-2 bg-white border-bottom nav-link">March</li></a>
+                  <a href="#" onclick="getpdf(2)"><li class="p-2 bg-white border-bottom nav-link">February</li></a>
+                  <a href="#" onclick="getpdf(1)"><li class="p-2 bg-white border-bottom nav-link">January</li></a>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-9 pt-4">
+            <div class="card payslip-pdf" style="width:100%;">
+              <div class="card-header py-2" style="background-color:rgb(48, 46, 46);">
+                <h4 class="text-light">December 2022 Payslip</h4>
+              </div>
+              <div class="card-body bg-dark pdf" id="payslippdf" style="height: 400px;">
+                <embed src="https://www.clickdimensions.com/links/TestPDFfile.pdf" width="100%" height="375" type="application/pdf">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container" style="background-color: white; border-radius: 10px">
+  <div class="row pt-2">
+    <div class="col-md-12 mx-2">
+      <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-0 md-4">
+        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+          <li class="breadcrumb-item">
+            <a href="#"><i class="fas fa-home"></i></a>
+          </li>
+          <li class="breadcrumb-item"><a href="#">Dashboards</a></li>
+          <li class="breadcrumb-item active" aria-current="page">
+            Payroll and Expense
+          </li>
+        </ol>
+      </nav>
+      
+    </div>
+    <hr style="background-color: lightgray; width: 95%" class="m-2 mx-4"/>
+    {% for x in months %} {% for y in x.mnth_data %}
+    <div class="col-md-2">
+      <div class="month-container mb-0">
+        {% with mnth=y.month %}
+        <a
+          href="#"
+          onclick="update_payroll('{{mnth}}')"
+          style="text-decoration: none; color: black"
+        >
+          {% endwith %}
+          <div class="card">
+            <div class="card-body pt-1 pb-1">
+              <div class="card-title mb-0">{{ y.month }}</div>
+              <div class="card-text pt-0 text-muted">
+                {{ y.prev }} 8 - {{ y.next }} 7
+              </div>
+            </div>
+            <div class="card-footer pt-1 pb-0">
+              {% if y.status == 'CM' %}
+              <span style="color: green">Completed</span>
+              {% elif y.status == 'CU' %}
+              <span style="color: blue">Current</span>
+              {% else %}
+              <span style="color: gray">Upcoming</span>
+              {% endif %}
+            </div>
+          </div>
+          <!-- <span><b class="text-muted">{{ y.month }}</b></span>
+        <br />
+        <span class="text-muted">{{ y.prev }} 8 - {{ y.next }} 7</span>
+        {% if y.status == 'CM' %}
+        <div class="month-status">
+          <p style="color: green;">Completed</p>
+        </div>
+        {% elif y.status == 'CU' %}
+        <div class="month-status">
+            <p style="color: blue;">Current</p>
+          </div>
+        {% else %}
+        <div class="month-status">
+            <p style="color: gray;">Upcoming</p>
+          </div>
+        {% endif %}
+-->
+        </a>
+      </div>
+    </div>
+    {% endfor %} {% endfor %}
+  </div>
+  <hr style="background-color: lightgray; width: 95%" />
+  <div class="row mx-1 py-2" id="payroll" style="border: 1px solid lightgray">
+    <div class="col-md-6">
+      <div class="payroll_subtitle" style="border-left: 0px solid lightgrey">
+        <h3>{{ mnth_name }} 2022 Payroll</h3>
+        <span>{{prev}} 8 - {{next}}-7</span>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="payroll_subtitle">
+        <h5>Calendar Days</h5>
+        <span>{{days}}</span>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="payroll_subtitle">
+        <h5>Employees</h5>
+        <span>{{t_emp}}</span>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="payroll_subtitle">
+        <h5>Payroll Processed</h5>
+        <span>{{p_emp}}/{{t_emp}}</span>
+      </div>
+    </div>
+    <hr class="mb-1" style="background-color: lightgray; width: 95%" />
+    <div class="col-md-12 mx-2">
+      <h5 class="text-muted">Total Payroll Cost</h5>
+      <p><i class="fa fa-inr" aria-hidden="true"></i>{{ budget }}</p>
+    </div>
+  </div>
+  <hr class="mb-1" style="background-color: lightgray; width: 95%" />
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card p-2">
+        <div class="card-header bg-success">
+          <a class="nav-link" href="/run_payroll"><span style="color:white;">Run Payroll <i class="fa fa-caret-down" aria-hidden="true"></i
+          ></span></a>
+        </div>
+        <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">S.no</th>
+                <th scope="col">Employee</th>
+                <th scope="col">Department</th>
+                <th scope="col">Leave Taken</th>
+                <th scope="col">Deduction</th>
+                <th scope="col">Salary</th>
+                <th scope="col">Earning</th>
+                <th scope="col">Payslip</th>
+              </tr>
+            </thead>
+            <tbody id="employee">
+              {% for result in results %}
+              <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <!--   data-toggle="modal" data-target=".bd-example-modal-lg"   -->
+                <td><a class="nav-link" onclick="getpdf('{{result.employee_id}}')">{{ result.name }}</a></td>
+                <td>{{ result.department }}</td>
+                <td>{{ result.leave_taken }}</td>
+                <td>{{ result.deduction }}</td>
+                <td>{{ result.salary }}</td>
+                <td>{{ result.earning }}</td>
+                <td><a class="btn btn-success btn-sm" href="/payslip_download/{{result.payslip_id}}">DOWNLOAD</a></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+      </div>
+    </div>
+    <hr class="mt-1" style="background-color: lightgray; width: 95%" />
+  </div>
+</div>
+
+<script type="text/javascript">
+  function getpdf(employee_id,month){
+    var postdata = {
+      'year': document.getElementById("yearselect").value,
+      'month': month,
+      employee_id: employee_id,
+    };
+    $.ajax({
+      type: "GET",
+      url: "/fetch_pdf/",
+      data: postdata,
+      encode: true,
+    }).done(function (data) {
+      data = JSON.parse(data);
+      if (data['status']=="success"){
+        var path = data["path"];
+        var month = data["month"];
+        var year = data["year"];
+        mystr = ""
+        mystr = `<div class="col-md-3">
+          <div class="card">
+              <div class="card-header bg-success p-3 py-2">
+                <h3 class="m-0" style="color:white;">Pay slips</h3>
+              </div>
+              <div class="card-body p-0">
+                <ul class="navbar-nav border">
+              <a href="#" onclick="getpdf(${employee_id},12)"><li class="p-2 bg-white border-bottom nav-link">December</li></a>
+              <a href="#" onclick="getpdf(${employee_id},11)"><li class="p-2 bg-white border-bottom nav-link">November</li></a>
+              <a href="#" onclick="getpdf(${employee_id},10)"><li class="p-2 bg-white border-bottom nav-link">October</li></a>
+              <a href="#" onclick="getpdf(${employee_id},9)"><li class="p-2 bg-white border-bottom nav-link">September</li></a>
+              <a href="#" onclick="getpdf(${employee_id},8)"><li class="p-2 bg-white border-bottom nav-link">August</li></a>
+              <a href="#" onclick="getpdf(${employee_id},7)"><li class="p-2 bg-white border-bottom nav-link">July</li></a>
+              <a href="#" onclick="getpdf(${employee_id},6)"><li class="p-2 bg-white border-bottom nav-link">June</li></a>
+              <a href="#" onclick="getpdf(${employee_id},5)"><li class="p-2 bg-white border-bottom nav-link">May</li></a>
+              <a href="#" onclick="getpdf(${employee_id},4)"><li class="p-2 bg-white border-bottom nav-link">April</li></a>
+              <a href="#" onclick="getpdf(${employee_id},3)"><li class="p-2 bg-white border-bottom nav-link">March</li></a>
+              <a href="#" onclick="getpdf(${employee_id},2)"><li class="p-2 bg-white border-bottom nav-link">February</li></a>
+              <a href="#" onclick="getpdf(${employee_id},1)"><li class="p-2 bg-white border-bottom nav-link">January</li></a>
+            </ul>
+          </div>
+          </div>
+          </div>
+          <div class="col-md-9">
+            <div class="card payslip-pdf" style="width:100%;">
+              <div class="card-header py-2" style="background-color:rgb(48, 46, 46);">
+                <h4 class="text-light">${month} ${year}</h4>
+              </div>
+              <div class="card-body bg-dark pdf" id="payslippdf" style="height: 400px;">
+                <embed src="/${path}" width="100%" height="375" type="application/pdf">
+              </div>
+            </div>
+          </div>`
+        $("#payslip-pdf").empty();
+        $("#payslip-pdf").append(mystr);
+        $('#mymodal').modal('show');
+      } else {
+        alert("Sorry! No data found.")
+      }
+    })
+  }
+
+
+  function update_payroll(month) {
+    console.log("Hey onclick working!", month);
+    $("#payroll").empty();
+    $("#employee").empty();
+    var postdata = {
+      month: month,
+    };
+    $.ajax({
+      type: "GET",
+      url: "/update_payroll/",
+      data: postdata,
+      encode: true,
+    }).done(function (data) {
+      data = JSON.parse(data);
+      if (data["status"] == "success") {
+        var month = data["month"];
+        var prev = data["prev"];
+        var next = data["next"];
+        var days = data["days"];
+        var t_emp = data["t_emp"];
+        var p_emp = data["p_emp"];
+        var amount = data["amount"];
+        empstr = "";
+        mystr = "";
+        mystr = `<div class="col-md-6">
+        <div class="payroll_subtitle" style="border-left: 0px solid lightgrey;">
+            <h4>${month} 2022 Payroll</h4>
+            <span>${prev} 8 - ${next}-7</span>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="payroll_subtitle">
+            <h6>Calendar Days</h6>
+            <span>${days}</span>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="payroll_subtitle">
+            <h6>Employees</h6>
+            <span>${t_emp}</span>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="payroll_subtitle">
+            <h6>Payroll Processed</h6>
+            <span>${p_emp}/${t_emp}</span>
+        </div>
+    </div>
+    <hr class="mb-1" style="background-color: lightgray;width: 95%;"/>
+    <div class="col-md-12 mx-2">
+        <h6 class="text-muted">Total Payroll Cost</h6>
+        <p><i class="fa fa-inr" aria-hidden="true"></i>${amount}</p>
+    </div>`;
+        empstr = ``;
+        const temp = JSON.stringify(data['results'])
+        console.log(temp)
+        var result = JSON.parse(temp);
+
+        for (x in result) {
+        console.log(x)
+          let name = result[x]['name'];
+          let department = result[x]['department'];
+          let leave = result[x]['leave_taken'];
+          let deduction = result[x]['deduction'];
+          let salary = result[x]['salary'];
+          let earning = result[x]['earning'];
+          let payslip_id = result[x]['payslip_id'];
+          var empstr = "";
+          empstr = `<tr>
+                        <th scope="row">${parseInt(x)+1}</th>
+                        <td>${name}</td>
+                        <td>${department}</td>
+                        <td>${leave}</td>
+                        <td>${deduction}</td>
+                        <td>${salary}</td>
+                        <td>${earning}</td>
+                        <td><a class="btn btn-success btn-sm" href="/payslip_download/${payslip_id}">DOWNLOAD</a></td>
+                    </tr>`;
+          $("#employee").append(empstr);
+        }
+        $("#payroll").append(mystr);
+        
+      } else {
+        mystr = "";
+        mystr = `<p class="m-4"><b>Sorry ! </b>No data found</p>`;
+        $("#payroll").append(mystr);
+      }
+    });
+    event.preventDefault();
+  }
+</script>
+<script src="/js/pdfobject.js"></script>
+<script>PDFObject.embed("https://www.clickdimensions.com/links/TestPDFfile.pdf", "#example123");</script>
+{% endblock %}

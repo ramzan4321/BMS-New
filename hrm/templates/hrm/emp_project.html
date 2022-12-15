@@ -1,0 +1,74 @@
+{% extends 'layouts/emp_base.html' %}
+{% block content %}
+{% load crispy_forms_tags %}
+<div class="container-fluid">
+    <div class="row py-2">
+        <div class="col-md-8">
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-0 md-4">
+                <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                  <li class="breadcrumb-item">
+                    <a href="#"><i class="fas fa-home"></i></a>
+                  </li>
+                  <li class="breadcrumb-item"><a href="#">Dashboards</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">
+                    Project and Task
+                  </li>
+                </ol>
+              </nav>
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="p-0 m-0">Project and Task Timeline</h4>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                          <tr>
+                            <th scope="col">Project</th>
+                            <th scope="col">Task</th>
+                            <th scope="col">Start Date</th>
+                            <th scope="col">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in tasks %}
+                          <tr>
+                            <th scope="row">{{ task.project_id }}</th>
+                            <td>{{ task.task_title }}</td>
+                            <td>{{ task.start_date }}</td>
+                            {% if task.status == 'C' %}
+                            <td style="color: green;"><b>Completed</b></td>
+                            {% elif task.status == 'N' %}
+                            <td style="color: red;"><b>Not Assigned</b></td>
+                            {% else %}
+                            <td style="color: blueviolet;"><b>Assigned</b></td>
+                            {% endif %}
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                </div>
+            </div>
+        </div>
+
+       
+
+        <div class="col-md-4">
+
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="p-0 m-0">Daily Work Status</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="#">
+                        {% csrf_token %}
+
+                        {{ w_form|crispy }}
+                        <button class="btn btn-outline-success" type="submit" style="width: 100%;">Submit</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

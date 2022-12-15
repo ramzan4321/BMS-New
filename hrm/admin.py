@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
-from .models import Employees, EmployeesWorkDetails, LeaveManagement, PaySlip, Project, Task
+from .models import *
 
 class EmployeesAdminInline(admin.StackedInline):
     model = Employees
@@ -13,8 +13,11 @@ class UserAdmin(admin.ModelAdmin):
 admin.site.register(User, UserAdmin)
 
 admin.site.register(Employees)
+admin.site.register(CompanyCredentials)
+admin.site.register(CompanyAccount)
 admin.site.register(EmployeesWorkDetails)
 admin.site.register(LeaveManagement)
 admin.site.register(PaySlip)
 admin.site.register(Project)
 admin.site.register(Task)
+admin.site.register(Contact)

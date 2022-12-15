@@ -2,13 +2,33 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
 from django.utils import timezone
-# Create your models here.
+
+class CompanyCredentials(models.Model):
+    company_name = models.CharField(max_length=100, null=False, blank=False)
+    address = models.CharField(max_length=100, null=False, blank=False)
+    pincode = models.IntegerField()
+    city = models.CharField(max_length=100, null=False, blank=False)
+    state = models.CharField(max_length=100, null=False, blank=False)
+    budget = models.IntegerField()
+
+    def __str__(self):
+        return self.company_name
+class CompanyAccount(models.Model):
+    title = models.CharField(max_length=100, null=False, blank=False)
+    type = models.CharField(max_length=10, null=False, blank=False)
+    category = models.CharField(max_length=100, null=False, blank=False)
+    date = models.DateTimeField(auto_now_add=True)
+    amount = models.IntegerField()
+
+    def __str__(self):
+        return self.title
+
 class Employees(models.Model):
     GENDER_CHOICES = (
         ('M', 'Male'),
         ('F', 'Female'),
     )
-    EMPLOYEE_CHOICES =(
+    EMPLOYEE_CHOICES = (
         ('CEO','CEO'),
         ('MGR','Manager'),
         ('SEE','Senior'),
@@ -20,11 +40,15 @@ class Employees(models.Model):
     dob = models.DateField(null=True, blank=True)
     mobile = models.CharField(max_length=10, null=False, blank=False, default='9999999999')
     address = models.CharField(max_length=70,null=True, blank=True)
+    pincode = models.IntegerField(default=208023)
     image = models.ImageField(default='default.jpg', upload_to='profile_img/')
     city = models.CharField(max_length=70,null=True, blank=True)
     state = models.CharField(max_length=70,null=True, blank=True)
     department = models.CharField(max_length=70,null=True, blank=True)
     designation = models.CharField(max_length=70,null=True, blank=True)
+    about = models.CharField(max_length=500,null=True, blank=True)
+    account_holder_name = models.CharField(max_length=70,null=True, blank=True)
+    branch = models.CharField(max_length=70,null=True, blank=True)
     bank_name = models.CharField(max_length=70,null=True, blank=True)
     bank_account_no = models.CharField(max_length=70,null=True, blank=True)
     ifsc_code = models.CharField(max_length=70,null=True, blank=True)
@@ -33,8 +57,8 @@ class Employees(models.Model):
     pf_uan = models.CharField(max_length=70,null=True, blank=True)
     role = models.CharField(max_length=3,null=True, blank=True, choices=EMPLOYEE_CHOICES)
     manager = models.ForeignKey('self',on_delete=models.CASCADE,null=True, blank=True)
-    salary = models.FloatField(null=True, blank=True)
-    paid_days = models.CharField(max_length=70, null=True, blank=True)
+    salary = models.IntegerField(null=True, blank=True)
+    paid_days = models.CharField(max_length=2, null=True, blank=True)
 
     def __str__(self):
         return self.user.username
@@ -64,6 +88,8 @@ class PaySlip(models.Model):
     employee_id = models.ForeignKey(User, on_delete=models.CASCADE,related_name='payslip')
     path = models.CharField(max_length =250, null=False, blank=False)
     dispatch_date = models.DateField()
+    salary = models.IntegerField(default=0)
+    earning = models.IntegerField(default=0)
 
     def __str__(self) -> str:
         return str(self.employee_id)+" "+str(self.dispatch_date)
@@ -110,6 +136,17 @@ class Task(models.Model):
 
     def __str__(self):
         return str(self.task_title)+" "+str(self.project_id)
+
+
+class Contact(models.Model):
+    name = models.CharField(max_length=50, blank=False, null=False)
+    email = models.EmailField(blank=False, null=False)
+    subject = models.CharField(max_length=50, blank=False, null=False)
+    message = models.CharField(max_length=500, blank=False, null=False)
+
+    def __str__(self):
+        return self.name+" "+str(self.email)
+
 
 class EmployeesWorkDetails(models.Model):
     STATUS_CHOICE = (

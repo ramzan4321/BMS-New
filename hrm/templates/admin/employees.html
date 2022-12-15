@@ -1,0 +1,46 @@
+{% extends 'layouts/base.html' %} {% load crispy_forms_tags %} {% block content %}
+
+<div class="container" style="background-color: white; border-radius: 10px">
+    <div class="row pt-2">
+      <div class="col-md-12 px-1">
+        <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-0 md-4">
+          <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+            <li class="breadcrumb-item">
+              <a href="#"><i class="fas fa-home"></i></a>
+            </li>
+            <li class="breadcrumb-item"><a href="#">Dashboards</a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+              Employee's List
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div class="col-md-6 px-1">
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Employee</th>
+                        <th scope="col">Department</th>
+                      </tr>
+                    </thead>
+                    <tbody id="employee">
+                      {% for result in results %}
+                      <tr>
+                        <th scope="row">{{ result.user.id }}</th>
+                        <!--   data-toggle="modal" data-target=".bd-example-modal-lg"   -->
+                        <td><a class="nav-link" href="/profile/{{result.user.id}}">{{ result.name }}</a></td>
+                        <td>{{ result.department }}</td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+{% endblock %}

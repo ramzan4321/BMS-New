@@ -1,5 +1,56 @@
-{% extends 'hrm/base.html' %} {% load crispy_forms_tags %} {% block body %}
-<div class="container mt-4">
+{% extends 'layouts/base.html' %} {% load crispy_forms_tags %} {% block content %}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="icon-container shadow my-3">
+        <a href="/payroll_expenses">
+      <div class="icon">
+        <i class="fa fa-inr fa-2x" aria-hidden="true"></i>
+      </div>
+      <div class="icon-label">
+        <h5>Payroll and Expense Tracking</h5>
+      </div>
+      </a>
+    </div>
+    </div>
+    <div class="col-md-3">
+      <div class="icon-container shadow my-3">
+        <a href="#">
+      <div class="icon">
+        <i class="fa fa-user-circle-o fa-2x" aria-hidden="true"></i>
+      </div>
+      <div class="icon-label">
+        <h5>People Data and Analytics</h5>
+      </div>
+      </a>
+    </div>
+    </div>
+    <div class="col-md-3">
+      <div class="icon-container shadow my-3">
+        <a href="#">
+      <div class="icon">
+        <i class="fa fa-calendar-times-o fa-2x" aria-hidden="true"></i>
+      </div>
+      <div class="icon-label">
+        <h5>Leave Management</h5>
+      </div>
+      </a>
+    </div>
+    </div>
+    <div class="col-md-3">
+      <div class="icon-container shadow my-3">
+        <a href="#">
+      <div class="icon">
+        <i class="fa fa-calendar-times-o fa-2x" aria-hidden="true"></i>
+      </div>
+      <div class="icon-label">
+        <h5>Project and Task Management</h5>
+      </div>
+      </a>
+    </div>
+    </div>
+  </div>
   <div class="row">
     <div class="col-12 mb-4">
       <div class="card">
@@ -51,7 +102,7 @@
               </div>
               <p style="overflow-x: scroll; padding: 5px; white-space: nowrap">
                 {% for tasks in project.tasks %}
-                <b style="color: red">---->> </b>
+                <b style="color: red"> </b>
                 {% if tasks.status == 'C' %}
                 <span style="color: green; padding: 8px; border-radius: 10px"
                   ><b>{{tasks.task_title}}</b></span
@@ -84,42 +135,6 @@
           </div>
         </div>
       </div>
-
-      <!--      <div class="card card-h mt-2" style="background-color: #edf8fd">
-        <div class="card-header obl">
-          <div>
-            <h5 style="float: left" class="ml-3">Employee's Work Details</h5>
-          </div>
-        </div>
-        <div class="card-body">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th scope="col">Employee Name</th>
-                <th scope="col">Designation</th>
-                <th scope="col">Working On</th>
-                <th scope="col">Manager</th>
-                <th scope="col">Availability</th>
-                <th scope="col">Leaves Taken</th>
-                <th scope="col">Leaves Left</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for result in results %}
-              <tr>
-                <th scope="row">{{ result.name }}</th>
-                <td>{{ result.designation }}</td>
-                <td>{% for task in result.tasks_list %} {{ task.task_title }}, {% endfor %}</td>
-                <td>{{ result.manager.name }}</td>
-                <td>Example</td>
-                <td>Example</td>
-                <td>Example</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div> -->
 
       
     </div>
