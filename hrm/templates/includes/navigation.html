@@ -198,7 +198,11 @@
               </span>
               <div class="media-body  ml-2  d-none d-lg-block">
                 <span class="mb-0 text-sm  font-weight-bold">
+                  {% if request.user.first_name %}
                   {{ request.user.first_name }} {{request.user.last_name}}
+                  {% else %}
+                  {{ request.user }}
+                  {% endif %}
                 </span>
               </div>
             </div>

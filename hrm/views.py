@@ -82,7 +82,6 @@ class AdminEmployeeProfile(View):
                 'leave_limit':leave_limit,
                 'joining_date':joining_date,
                 'reporting':reporting,
-                'dob': emp.dob.strftime("%d %B %y"),
             }
             return context
 
@@ -199,71 +198,77 @@ class AdminPayrollExpense(ListView):
         context = super(AdminPayrollExpense, self).get_context_data(**kwargs)
         if self.request.user.is_superuser == True:
             emps = Employees.objects.exclude(role='CEO')
-            query = CompanyCredentials.objects.get(pk=1)
             month_list = CompanyAccount.objects.filter(category='Payroll Expense').last()
-            chk = CompanyAccount.objects.filter(category='Payroll Expense',type='D').count()
-            if chk > 1:
-                mnth = month_list.date.month-1
-            else:
-                mnth = month_list.date.month
-            final_data = []
-            dictt = {}
-            mnth_name, prev, next, days ="", "", "", ""
-            year = month_list.date.year
-            mnth_name = calendar.month_name[mnth]
-            if mnth == 1:
-                prev = calendar.month_name[12][:3]
-            else:
-                prev = calendar.month_name[mnth-1][:3]
-            next = calendar.month_name[mnth][:3]
-            days = calendar.monthrange(year,mnth)
-            month_name = []
-            if mnth <= 6:
-                for i in range(6):
-                    month_name.append(calendar.month_name[mnth+i])
-            else:
-                for i in range(6):
-                    mnth_dict = {}
-                    if mnth + i > 12:
-                        mnth_num = (mnth+i) - 12
-                    else:
-                        mnth_num = mnth+i
-                    
-                    if mnth_num == 1:
-                        xmonth = 12
-                    else:
-                        xmonth = mnth_num-1
-
-                    mnth_dict['month'] = calendar.month_name[mnth_num]
-                    mnth_dict['prev'] = calendar.month_name[xmonth][:3]
-                    mnth_dict['next'] = calendar.month_name[mnth_num][:3]
-                    if mnth_num == mnth:
-                        mnth_dict['status'] = 'CM'
-                    elif mnth_num == mnth+1:
-                        chk = CompanyAccount.objects.filter(date__month=mnth_num)
-                        if chk.exists():
-                            mnth_dict['status'] = 'CM'
+            if month_list:
+                chk = CompanyAccount.objects.filter(category='Payroll Expense',type='D').count()
+                if chk > 1:
+                    mnth = month_list.date.month-1
+                else:
+                    mnth = month_list.date.month
+                final_data = []
+                dictt = {}
+                mnth_name, prev, next, days ="", "", "", ""
+                year = month_list.date.year
+                mnth_name = calendar.month_name[mnth]
+                if mnth == 1:
+                    prev = calendar.month_name[12][:3]
+                else:
+                    prev = calendar.month_name[mnth-1][:3]
+                next = calendar.month_name[mnth][:3]
+                days = calendar.monthrange(year,mnth)
+                month_name = []
+                if mnth <= 6:
+                    for i in range(6):
+                        month_name.append(calendar.month_name[mnth+i])
+                else:
+                    for i in range(6):
+                        mnth_dict = {}
+                        if mnth + i > 12:
+                            mnth_num = (mnth+i) - 12
                         else:
-                            mnth_dict['status'] = 'CU'
-                    else:
-                        mnth_dict['status'] = 'UP'
-                    month_name.append(mnth_dict)
-                    dictt['mnth_data'] = month_name
-            payroll = UpdatePayroll.as_view()(self.request,mnth)
-            final_data.append(dictt)
-            context.update({
-                'budget':month_list.amount,
-                'months':final_data,
-                'mnth_name':mnth_name,
-                'prev':prev,
-                'next':next,
-                'days':days[1],
-                't_emp':payroll['t_emp'],
-                'p_emp':payroll['p_emp'],
-                'results':payroll['results'],
-                'emps':emps
-            })
-            return context
+                            mnth_num = mnth+i
+                        
+                        if mnth_num == 1:
+                            xmonth = 12
+                        else:
+                            xmonth = mnth_num-1
+
+                        mnth_dict['month'] = calendar.month_name[mnth_num]
+                        mnth_dict['prev'] = calendar.month_name[xmonth][:3]
+                        mnth_dict['next'] = calendar.month_name[mnth_num][:3]
+                        if mnth_num == mnth:
+                            mnth_dict['status'] = 'CM'
+                        elif mnth_num == mnth+1:
+                            chk = CompanyAccount.objects.filter(date__month=mnth_num)
+                            if chk.exists():
+                                mnth_dict['status'] = 'CM'
+                            else:
+                                mnth_dict['status'] = 'CU'
+                        else:
+                            mnth_dict['status'] = 'UP'
+                        month_name.append(mnth_dict)
+                        dictt['mnth_data'] = month_name
+                payroll = UpdatePayroll.as_view()(self.request,mnth)
+                final_data.append(dictt)
+                context.update({
+                    'budget':month_list.amount,
+                    'months':final_data,
+                    'mnth_name':mnth_name,
+                    'prev':prev,
+                    'next':next,
+                    'days':days[1],
+                    't_emp':payroll['t_emp'],
+                    'p_emp':payroll['p_emp'],
+                    'results':payroll['results'],
+                    'emps':emps,
+                    'msg':'success'
+                })
+                return context
+            else:
+                context = {
+                    'msg':'Sorry No Data found yet'
+                }
+                return context
 
 
 class AdminProject(ListView):
@@ -581,6 +586,13 @@ class EmployeesList(ListView):
 
 class EmployeeProfileTemplateView(TemplateView):
     template_name = 'hrm/employee_profile.html'
+    admin_template_name = 'admin/admin-emp-profile.html'
+
+    def get_template_names(self):
+        if self.request.user.is_superuser != True:
+            return[self.template_name]
+        return[self.admin_template_name]
+
     def get_context_data(self, **kwargs):
         context = super(EmployeeProfileTemplateView,self).get_context_data(**kwargs)
         result = AdminEmployeeProfile.as_view()(self.request, id=self.request.user.id)
@@ -590,7 +602,7 @@ class EmployeeProfileTemplateView(TemplateView):
 
 class EditEmployeeProfile(ListView):
     model = User
-    template_name = 'admin/profile-edit.html'
+    template_name = 'hrm/employee-edit-profile.html'
 
     def get_context_data(self, **kwargs):
         context = super(EditEmployeeProfile, self).get_context_data(**kwargs)
@@ -628,8 +640,12 @@ class EmployeePayroll(TemplateView):
     def get_context_data(self, **kwargs):
         if self.request.user.is_authenticated:
             context = super(EmployeePayroll, self).get_context_data(**kwargs)
+            emp = Employees.objects.get(user_id = self.request.user.id)
             emp_context = PayrollInfo.as_view()(self.request, id = self.request.user.id)
             context.update(emp_context)
+            context.update({
+                'emp':emp
+            })
             return context
         else:
             context = {
@@ -758,7 +774,6 @@ class Index(View):
                 login(request, user)
             messages.success(request,f'{username}! Welcome to Triodec...')
             return redirect('index')
-        print(form.errors)
 
 
 class LogoutView(View):
@@ -771,26 +786,32 @@ class PayrollInfo(View):
     def get(self, request, id=None):
         context = AdminEmployeeProfile.as_view()(self.request, id = id)
         payslip = PaySlip.objects.filter(employee_id=id)
-        cu_payout = payslip.last().earning
-        next_month = payslip.last().dispatch_date.month + 1
-        payslip_list = []
-        for x in payslip:
-            temp = {}
-            mnth = x.dispatch_date.month
-            l_count = LeaveManagement.objects.filter(employee_id=id,leave_days__month=mnth-1,leave_type='U').count()
-            temp['month'] = calendar.month_name[mnth]
-            temp['l_count'] = l_count
-            temp['salary'] = x.salary
-            temp['earning'] = x.earning
-            temp['deduction'] = x.salary - x.earning
-            temp['payslip_id'] = x.path
-            payslip_list.append(temp)
-        context.update({
-            'payslip':payslip_list,
-            'current_payout':cu_payout,
-            'next_month':next_month
-        })
-        return context
+        if payslip.exists():
+            cu_payout = payslip.last().earning
+            next_month = payslip.last().dispatch_date.month + 1
+            payslip_list = []
+            for x in payslip:
+                temp = {}
+                mnth = x.dispatch_date.month
+                l_count = LeaveManagement.objects.filter(employee_id=id,leave_days__month=mnth-1,leave_type='U').count()
+                temp['month'] = calendar.month_name[mnth]
+                temp['l_count'] = l_count
+                temp['salary'] = x.salary
+                temp['earning'] = x.earning
+                temp['deduction'] = x.salary - x.earning
+                temp['payslip_id'] = x.path
+                payslip_list.append(temp)
+            context.update({
+                'payslip':payslip_list,
+                'current_payout':cu_payout,
+                'next_month':next_month
+            })
+            return context
+        else:
+            context = {
+                'msg':'Sorry! No Payslip found'
+            }
+            return context
 
 
 
@@ -810,6 +831,7 @@ class ProfileListView(ListView):
             emply = Employees.objects.exclude(role='CEO')
             proj = Project.objects.all()
             tasks_result = []
+            result1 = []
             for project in proj:
                 tasks_list = []
                 total_count = TaskTitle.objects.filter(project_id=project.id).count()
@@ -953,6 +975,7 @@ class UpdateEmployeeProfile(View):
         fetch = Employees.objects.get(user_id=id)
         fetch.name = request.POST['first_name']+" "+request.POST['last_name']
         fetch.address = request.POST['address']
+        fetch.about = request.POST['about']
         fetch.city = request.POST['city']
         fetch.state = request.POST['state']
         fetch.pincode = request.POST['pincode']
