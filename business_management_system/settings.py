@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-(y!i&=t1rc8gn@+*_6ml!np0s=s^@eadn@+2))6+3g=n%x$*hq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -119,11 +119,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-EMAIL_HOST = 'smtp-relay.sendinblue.com'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'ramzanalitrux@gmail.com'
-EMAIL_HOST_PASSWORD = 'tqTFkaCZD2BR4QHm'
+EMAIL_HOST_USER = 'aliramzan982@gmail.com'
+EMAIL_HOST_PASSWORD = 'nnqvfebhmzmbepud'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -143,6 +143,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR,'hrm/static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 

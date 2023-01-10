@@ -122,9 +122,9 @@ class AdminLeave(ListView):
                     balance_leave = chk_last_year
                     leave_forwarded = 0
                 leave_limit = chk_last_year + leave_forwarded
-                
+
                 x = LeaveManagement.objects.filter(employee_id=employee.user.id,leave_days__month=month).count()
-                
+
                 employee_dict['name'] = employee.name
                 employee_dict['department'] = employee.department
                 employee_dict['total_leave'] = total_leave
@@ -227,7 +227,7 @@ class AdminPayrollExpense(ListView):
                             mnth_num = (mnth+i) - 12
                         else:
                             mnth_num = mnth+i
-                        
+
                         if mnth_num == 1:
                             xmonth = 12
                         else:
@@ -303,7 +303,7 @@ class AdminProject(ListView):
                     qs1 = Task.objects.filter(project_id=project.id,status='C')
                     qs2 = Task.objects.filter(project_id=project.id,status='A').exclude(status='C')
                     qs3 = Task.objects.filter(project_id=project.id,status='N').exclude(status='A')
-                    
+
                     proj_task = chain(qs1,qs2,qs3)
                     for tsk in proj_task:
                         proj_task_dict = {}
@@ -347,7 +347,7 @@ class AdminProject(ListView):
                     fetch_task = Task.objects.filter(employee_id=emp.user_id).exclude(status='C')
                     fetch_proj = Task.objects.filter(employee_id=emp.user_id).exclude(status='C')
                     proj_list = []
-                    for proj in fetch_proj: 
+                    for proj in fetch_proj:
                         proj_list.append(proj.project_id)
                     task_dict_list = []
                     for task in fetch_task:
@@ -419,7 +419,7 @@ class AdminProject(ListView):
                     return redirect('admin_project')
                 role_employee = Employees.objects.get(user=employee_id)
                 if status != 'C':
-                    chk_employee_work = Task.objects.filter(employee_id=employee_id,status='A').count() 
+                    chk_employee_work = Task.objects.filter(employee_id=employee_id,status='A').count()
                     if role_employee.role == 'SEE' and chk_employee_work < 2:
                         task_update = Task.objects.get(task_title=task_title)
                         task_update.status = taskassign_form.cleaned_data.get('status')
@@ -543,7 +543,7 @@ class EmpLeaveList(ListView):
                 if chk < leave_limit:
                     l_form = l_form.save(commit=False)
                     l_form.employee_id = request.user
-                    leave_reason = l_form.leave_reason 
+                    leave_reason = l_form.leave_reason
                     l_form.save()
                     emp_name = Employees.objects.get(user=request.user)
                     data = {
@@ -580,7 +580,7 @@ class EmployeesList(ListView):
     context_object_name = 'results'
 
     def get_queryset(self):
-        if self.request.user.is_superuser == True: 
+        if self.request.user.is_superuser == True:
             return Employees.objects.exclude(role='CEO')
 
 
@@ -652,7 +652,7 @@ class EmployeePayroll(TemplateView):
                 "msg":"Only Employee access."
             }
             return context
-    
+
 
 class EmployeePayrollAdmin(DetailView):
     model = User
@@ -669,6 +669,10 @@ class EmployeePayrollAdmin(DetailView):
             context = super(EmployeePayrollAdmin, self).get_context_data(**kwargs)
             emp_context = PayrollInfo.as_view()(self.request, id = kwargs['object'].id)
             context.update(emp_context)
+            emp = Employees.objects.get(id=kwargs['object'].id)
+            context.update({
+                'emp':emp,
+                })
             return context
         else:
             context = {
@@ -846,7 +850,7 @@ class ProfileListView(ListView):
                     qs1 = Task.objects.filter(project_id=project.id,status='C')
                     qs2 = Task.objects.filter(project_id=project.id,status='A').exclude(status='C')
                     qs3 = Task.objects.filter(project_id=project.id,status='N').exclude(status='A')
-                    
+
                     proj_task = chain(qs1,qs2,qs3)
                     for tsk in proj_task:
                         proj_task_dict = {}
@@ -937,7 +941,7 @@ class ProfileListView(ListView):
                 'leaves':leave,
             })
             return context
-            
+
 
 class PayslipDownload(View):
     def get(self, request, id=None):
@@ -975,6 +979,8 @@ class UpdateEmployeeProfile(View):
         fetch = Employees.objects.get(user_id=id)
         fetch.name = request.POST['first_name']+" "+request.POST['last_name']
         fetch.address = request.POST['address']
+        fetch.dob = request.POST['dob']
+        fetch.mobile = request.POST['mobile']
         fetch.about = request.POST['about']
         fetch.city = request.POST['city']
         fetch.state = request.POST['state']
@@ -987,6 +993,8 @@ class UpdateEmployeeProfile(View):
         fetch.pan_no = request.POST['pan_no']
         fetch.pf_no = request.POST['pf_no']
         fetch.pf_uan = request.POST['pf_uan']
+        if request.user.is_superuser == True:
+            fetch.salary = request.POST['salary']
         fetch.save()
         fetch.user.email = request.POST['email']
         fetch.user.last_name = request.POST['last_name']
@@ -994,7 +1002,9 @@ class UpdateEmployeeProfile(View):
         fetch.user.username = request.POST['username']
         fetch.user.save()
         messages.success(request, 'Profile has been updated.')
-        return redirect(f'/edit_profile/{id}')
+        if request.user.is_superuser == True:
+            return redirect(f'/edit_profile/{id}')
+        return redirect('/edit_profile')
 
 
 class UpdatePayroll(View):
@@ -1047,7 +1057,7 @@ class UpdatePayroll(View):
                         leave_paid = int(0.0)
                         pre_month = month-1
                     mnth_name = calendar.month_name[pre_month]
-                    
+
                     x = LeaveManagement.objects.filter(employee_id=employee.user.id,leave_type='U',leave_days__month=pre_month).count()
                     if x != 0:
                         if month == 1:

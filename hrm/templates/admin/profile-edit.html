@@ -61,6 +61,31 @@
                               <input type="text" id="input-last-name" name="last_name" class="form-control" placeholder="Last name" value="{{ emp.user.last_name }}">
                             </div>
                           </div>
+                          <div class="col-lg-6">
+                            <div class="form-group">
+                              <label class="form-control-label" for="input-mobile">Contact</label>
+                              <input type="text" id="input-mobile" name="mobile" class="form-control" placeholder="Contact No." value="{{ emp.mobile }}">
+                            </div>
+                          </div>
+                          <div class="col-lg-6">
+                            <div class="form-group">
+                              <label class="form-control-label" for="input-dob">Date of birth</label>
+                              <input type="date" id="input-dob" name="dob" class="form-control" value="{{ emp.dob|date:'Y-m-d' }}">
+                            </div>
+                          </div>
+                          <div class="col-lg-6">
+                            <div class="form-group">
+                              <label class="form-control-label" for="input-salary">Salary</label>
+                              <input type="text" id="input-salary" name="salary" class="form-control" placeholder="Employee Salary" value="{{ emp.salary }}">
+                            </div>
+                          </div>
+                          <div class="col-lg-6">
+                            <div class="form-group">
+                              <label class="form-control-label" for="input-about">About</label>
+                              <textarea id="input-about" name="about" class="form-control" placeholder="Last name" value="{{ emp.about }}" rows="5">{{ emp.about }}</textarea>
+                            </div>
+                          </div>
+
                         </div>
                       </div>
                       <hr class="my-4" />

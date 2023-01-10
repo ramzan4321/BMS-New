@@ -48,7 +48,7 @@
           <!-- Navigation -->
           <ul class="navbar-nav mb-md-3">
             <li class="nav-item">
-                <a class="nav-link {% if 'icons' in segment %} active {% endif %}" href="/profile/{{ user.id }}">
+                <a class="nav-link {% if 'icons' in segment %} active {% endif %}" href="/edit_profile">
                     <i class="ni ni-planet text-orange"></i>
                     <span class="nav-link-text">Edit Profile Here</span>
                   </a>
@@ -71,7 +71,7 @@
           <ul class="navbar-nav mb-md-3">
 
             {% if user.is_authenticated %}
-          
+
           <li class="nav-item">
             <a class="nav-link" href="{% url 'logout' %}">
                 <i class="ni ni-user-run text-red"></i>
